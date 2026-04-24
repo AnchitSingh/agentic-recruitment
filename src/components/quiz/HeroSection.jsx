@@ -25,11 +25,6 @@ const HeroSection = ({ profile }) => {
             </p>
           </div>
 
-          <nav className="flex flex-wrap items-center gap-2" aria-label="Quick actions">
-            <Button variant="secondary" size="sm" onClick={() => navigate('/stats')}>
-              Open Analytics
-            </Button>
-          </nav>
         </div>
       </div>
     </div>

@@ -4,7 +4,6 @@ import QuizPage from '../pages/QuizPage';
 import QuizLoadingPage from '../pages/QuizLoadingPage';
 import QuizResultsPage from '../pages/QuizResultsPage';
 import BookmarksPage from '../pages/BookmarksPage';
-import GlobalStatsPage from '../pages/GlobalStatsPage';
 import QuizCatalogPage from '../pages/QuizCatalogPage';
 import QuestionPage from '../pages/QuestionPage';
 
@@ -19,7 +18,6 @@ const AppRoutes = () => {
       <Route path="/quiz/loading" element={<QuizLoadingPage />} />
       <Route path="/results" element={<QuizResultsPage />} />
       <Route path="/bookmarks" element={<BookmarksPage />} />
-      <Route path="/stats" element={<GlobalStatsPage />} />
     </Routes>
   );
 };

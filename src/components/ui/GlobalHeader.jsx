@@ -15,10 +15,8 @@ const LEFT_NAV = [
   { id: 'bookmarks', label: 'Bookmarks', icon: 'bookmark', path: '/bookmarks' },
 ];
 
-/* Only stats remains in right navigation */
-const RIGHT_NAV = [
-  { id: 'stats', label: 'Stats', icon: 'stats', path: '/stats' },
-];
+/* Right navigation is now empty */
+const RIGHT_NAV = [];
 
 const IS_MAC =
   typeof navigator !== 'undefined' &&
