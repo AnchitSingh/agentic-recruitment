@@ -13,18 +13,18 @@ export const MobileHero = ({ entrance }) => {
                         The most
                         <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 bg-clip-text text-transparent">
                             {' '}
-                            comprehensive{' '}
+                            intelligent{' '}
                         </span>
-                        USMLE question bank
+                        AI talent scout
                     </h1>
                 </div>
                 <div style={entrance(2)}>
                     <p className="text-lg leading-relaxed mb-8 text-slate-500 max-w-xl mx-auto">
-                        10,000+ expertly crafted questions across all Steps with{' '}
+                        AI-powered candidate discovery and engagement with{' '}
                         <span className="font-medium text-slate-700">
-                            adaptive quizzes that learn your weak spots
+                            intelligent matching that understands your needs
                         </span>{' '}
-                        and help you score higher, faster.
+                        and finds the perfect talent, faster.
                     </p>
                 </div>
                 <div
@@ -37,7 +37,7 @@ export const MobileHero = ({ entrance }) => {
                     <div className="relative z-10 animate-float">
                         <img
                             src="/assets/i3.avif"
-                            alt="ResidentQuest study companion"
+                            alt="AI Talent Scout Agent"
                             className="w-56 sm:w-64 drop-shadow-2xl"
                             loading="eager"
                             decoding="async"
@@ -47,22 +47,22 @@ export const MobileHero = ({ entrance }) => {
                         <div className="flex items-center gap-2 text-xs">
                             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                             <span className="font-medium text-slate-700">
-                                Score: 265 🎯
+                                Match Score: 94% 🎯
                             </span>
                         </div>
                     </FloatingCard>
                     <FloatingCard className="bottom-12 -left-2 sm:left-4 animate-float-slow">
                         <div className="text-xs mb-1 font-medium text-slate-600">
-                            Pathology
+                            Top Skills
                         </div>
                         <div className="flex gap-1">
                             {[
-                                'bg-green-500',
-                                'bg-green-500',
+                                'bg-blue-500',
+                                'bg-blue-500',
+                                'bg-blue-500',
                                 'bg-green-500',
                                 'bg-green-500',
                                 'bg-amber-500',
-                                'bg-slate-200',
                             ].map((c, i) => (
                                 <div
                                     key={i}

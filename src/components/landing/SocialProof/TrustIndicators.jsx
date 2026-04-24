@@ -3,9 +3,9 @@ import { cn } from '../../../utils/designTokens';
 
 export const TrustIndicators = ({ className = '' }) => {
     const items = [
-        { label: '10,000+ Questions', color: 'bg-green-100 text-green-600' },
-        { label: 'Step 1, 2 & 3', color: 'bg-blue-100 text-blue-600' },
-        { label: 'AI-Powered Adaptive', color: 'bg-purple-100 text-purple-600' },
+        { label: 'Semantic Candidate Matching', color: 'bg-green-100 text-green-600' },
+        { label: 'Match & Interest Scoring', color: 'bg-blue-100 text-blue-600' },
+        { label: 'Agentic Candidate Outreach', color: 'bg-purple-100 text-purple-600' },
         { label: 'Free to Start', color: 'bg-amber-100 text-amber-600' },
     ];
     

@@ -14,19 +14,19 @@ export const DesktopHero = ({ entrance }) => {
                             The most
                             <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 bg-clip-text text-transparent">
                                 {' '}
-                                comprehensive{' '}
+                                intelligent{' '}
                             </span>
-                            USMLE question bank
+                            AI talent scout
                         </h1>
                     </div>
                     <div style={entrance(2)}>
                         <p className="text-xl leading-relaxed mb-8 text-slate-500 max-w-lg">
-                            10,000+ expertly crafted questions across Step 1, 2 &amp; 3
+                            AI-powered candidate discovery and engagement across all industries
                             with{' '}
                             <span className="font-medium text-slate-700">
-                                adaptive quizzes that learn your weak spots
+                                intelligent matching that understands your needs
                             </span>{' '}
-                            and help you score higher, faster.
+                            and finds the perfect talent, faster.
                         </p>
                     </div>
                     <div style={entrance(3)} className="mb-8">
@@ -46,7 +46,7 @@ export const DesktopHero = ({ entrance }) => {
                     >
                         <img
                             src="/assets/i3.avif"
-                            alt="ResidentQuest study companion"
+                            alt="AI Talent Scout Agent"
                             className="w-80 xl:w-96 drop-shadow-2xl"
                             loading="eager"
                             decoding="async"
@@ -59,34 +59,34 @@ export const DesktopHero = ({ entrance }) => {
                             </div>
                             <div>
                                 <div className="text-[11px] text-slate-500 font-medium">
-                                    Target Score
+                                    Match Score
                                 </div>
                                 <div className="text-sm font-semibold text-slate-800">
-                                    265+
+                                    94%
                                 </div>
                             </div>
                         </div>
                     </FloatingCard>
                     <FloatingCard className="top-32 -left-4 xl:left-0 animate-float-slow">
                         <div className="text-xs mb-2.5 font-medium text-slate-600">
-                            High-Yield Subjects
+                            Top Industries
                         </div>
                         <div className="grid grid-cols-2 gap-1.5">
                             {[
                                 {
-                                    label: 'Anatomy',
+                                    label: 'Tech',
                                     cls: 'bg-blue-50 text-blue-700',
                                 },
                                 {
-                                    label: 'Pharm',
+                                    label: 'Health',
                                     cls: 'bg-green-50 text-green-700',
                                 },
                                 {
-                                    label: 'Micro',
+                                    label: 'Finance',
                                     cls: 'bg-purple-50 text-purple-700',
                                 },
                                 {
-                                    label: 'Patho',
+                                    label: 'Sales',
                                     cls: 'bg-amber-50 text-amber-700',
                                 },
                             ].map(({ label, cls }) => (
@@ -118,10 +118,10 @@ export const DesktopHero = ({ entrance }) => {
                             </div>
                             <div>
                                 <div className="text-xs font-medium text-slate-700">
-                                    Weak Spot Found
+                                    Perfect Match Found
                                 </div>
                                 <div className="text-xs text-amber-600 font-medium">
-                                    Renal Phys → 12 Qs added
+                                    Senior Developer → 98% match
                                 </div>
                             </div>
                         </div>
@@ -129,14 +129,14 @@ export const DesktopHero = ({ entrance }) => {
                     <FloatingCard className="bottom-8 right-6 xl:right-12 animate-float-reverse-slow">
                         <div className="flex items-center gap-2.5">
                             <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                                <span className="text-sm leading-none">📚</span>
+                                <span className="text-sm leading-none">🧣</span>
                             </div>
                             <div>
                                 <div className="font-semibold text-slate-800">
-                                    10,000+
+                                    50,000+
                                 </div>
                                 <div className="text-xs text-slate-500">
-                                    Questions &amp; Growing
+                                    Candidates &amp; Growing
                                 </div>
                             </div>
                         </div>

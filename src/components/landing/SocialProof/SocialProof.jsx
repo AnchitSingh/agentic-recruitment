@@ -36,7 +36,7 @@ export const SocialProof = ({ className = '' }) => (
             </div>
             <p className="text-sm text-slate-500">
                 Loved by{' '}
-                <span className="font-medium text-slate-700">5,000+</span> students
+                <span className="font-medium text-slate-700">1,000+</span> tech recruiters
             </p>
         </div>
     </div>
