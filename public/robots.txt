@@ -1,0 +1,4 @@
+# Exam Buddy robots.txt
+
+User-agent: *
+Allow: /
