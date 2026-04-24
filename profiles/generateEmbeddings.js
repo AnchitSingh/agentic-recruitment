@@ -4,7 +4,7 @@ import 'dotenv/config';
 
 // 1. Initialize the Google GenAI client (NEW SDK)
 const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,   // ← Use environment variable!
+  apiKey: process.env.VITE_GEMINI_API_KEY,   // ← Use environment variable!
 });
 
 // Helper function to delay execution (avoids rate limiting on free tier)

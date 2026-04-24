@@ -1,5 +1,3 @@
-// src/utils/pdfProcessor.js
-
 import * as pdfjsLib from 'pdfjs-dist';
 
 // Configure PDF.js worker with static path
@@ -9,11 +7,10 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url
 ).toString();
 
-
 /**
- * Process uploaded files (images or PDFs) into image blobs
+ * Process uploaded files (images, PDFs, or text) into image blobs
  * @param {FileList|File[]} files - The uploaded files
- * @returns {Promise<Array>} - Array of { blob: Blob, type: 'image'|'pdf', name: string, pageNum?: number }
+ * @returns {Promise<Array>} - Array of { blob: Blob, type: 'image'|'pdf'|'text', name: string, pageNum?: number, text?: string }
  */
 export async function processFiles(files) {
   const filesArray = Array.isArray(files) ? files : Array.from(files);
@@ -55,7 +52,6 @@ export async function processFiles(files) {
       console.warn(`Unsupported file type: ${file.type} for file "${file.name}"`);
     }
   }
-  
     
   return results;
 }
@@ -98,77 +94,45 @@ async function convertPdfToImages(pdfFile) {
         alpha: false  // Opaque canvas for smaller file size
       });
       
-      canvas.width = viewport.width;
+      // Set canvas dimensions
       canvas.height = viewport.height;
+      canvas.width = viewport.width;
       
       // Render PDF page to canvas
       const renderContext = {
         canvasContext: context,
-        viewport: viewport,
-        // Optional: set background color
-        background: 'white'
+        viewport: viewport
       };
       
       await page.render(renderContext).promise;
       
       // Convert canvas to blob
-      const blob = await new Promise((resolve, reject) => {
-        canvas.toBlob(
-          (result) => {
-            if (result) {
-              resolve(result);
-            } else {
-              reject(new Error('Canvas to blob conversion failed'));
-            }
-          },
-          'image/png',
-          0.95  // Quality (0.0 - 1.0)
-        );
+      const blob = await new Promise((resolve) => {
+        canvas.toBlob(resolve, 'image/jpeg', 0.8);
       });
       
       images.push({
-        blob,
-        type: 'pdf',
-        pageNum,
+        blob: blob,
+        type: 'image',
         name: `${pdfFile.name} - Page ${pageNum}`,
-        dimensions: {
-          width: viewport.width,
-          height: viewport.height
-        }
+        pageNum: pageNum
       });
       
-      // Clean up
-      page.cleanup();
+      console.log(`✅ Converted page ${pageNum} to image`);
       
     } catch (error) {
-      console.error(`Error processing page ${pageNum}:`, error);
-      throw new Error(`Failed to render page ${pageNum}: ${error.message}`);
+      console.error(`Failed to process page ${pageNum}:`, error);
+      throw new Error(`Failed to process page ${pageNum}: ${error.message}`);
     }
   }
   
-  console.log(`✅ Converted ${images.length} PDF page(s) to images`);
   return images;
 }
 
 /**
- * Convert blob to base64 data URL (if needed for preview)
- * Note: Chrome Prompt API accepts Blob directly, so this is optional
+ * Create preview URL for an image blob
  * @param {Blob} blob - Image blob
- * @returns {Promise<string>} - Data URL string
- */
-export function blobToDataURL(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error('Failed to read blob as data URL'));
-    reader.readAsDataURL(blob);
-  });
-}
-
-/**
- * Get preview URL for displaying images in UI
- * @param {Blob} blob - Image blob
- * @returns {string} - Object URL
+ * @returns {string} - Preview URL
  */
 export function createPreviewURL(blob) {
   return URL.createObjectURL(blob);
@@ -176,52 +140,10 @@ export function createPreviewURL(blob) {
 
 /**
  * Revoke preview URL to free memory
- * @param {string} url - Object URL to revoke
+ * @param {string} url - Preview URL to revoke
  */
 export function revokePreviewURL(url) {
-  URL.revokeObjectURL(url);
+  if (url && url.startsWith('blob:')) {
+    URL.revokeObjectURL(url);
+  }
 }
-
-/**
- * Validate file before processing
- * @param {File} file
- * @returns {Object} - { valid: boolean, error?: string }
- */
-export function validateFile(file) {
-  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
-  const ALLOWED_TYPES = [
-    'image/jpeg',
-    'image/jpg',
-    'image/png',
-    'image/webp',
-    'application/pdf'
-  ];
-  
-  if (!file) {
-    return { valid: false, error: 'No file provided' };
-  }
-  
-  if (file.size > MAX_FILE_SIZE) {
-    return { 
-      valid: false, 
-      error: `File too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Max: 50MB` 
-    };
-  }
-  
-  if (!ALLOWED_TYPES.includes(file.type)) {
-    return { 
-      valid: false, 
-      error: `Unsupported file type: ${file.type}` 
-    };
-  }
-  
-  return { valid: true };
-}
-
-export default {
-  processFiles,
-  blobToDataURL,
-  createPreviewURL,
-  revokePreviewURL,
-  validateFile
-};
