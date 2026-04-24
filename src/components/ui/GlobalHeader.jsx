@@ -15,9 +15,8 @@ const LEFT_NAV = [
   { id: 'bookmarks', label: 'Bookmarks', icon: 'bookmark', path: '/bookmarks' },
 ];
 
-/* History moved under the Profile dropdown → only 2 regular items */
+/* Only stats remains in right navigation */
 const RIGHT_NAV = [
-  { id: 'paused', label: 'Paused', icon: 'pause', path: '/paused' },
   { id: 'stats', label: 'Stats', icon: 'stats', path: '/stats' },
 ];
 
@@ -77,15 +76,7 @@ const NavIcon = ({ name, isActive = false, light = false }) => {
           <path d="M21.4955 11C21.4955 11 21.5 11.3395 21.5 12C21.5 16.4784 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4784 2.5 12C2.5 7.52169 2.5 5.28252 3.89124 3.89127C5.28249 2.50003 7.52166 2.50003 12 2.50003L13 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       );
-    case 'history':
-      return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" className={cls} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M19 10.5V9.99995C19 6.22876 18.9999 4.34311 17.8284 3.17154C16.6568 2 14.7712 2 11 2C7.22889 2 5.34326 2.00006 4.17169 3.17159C3.00015 4.34315 3.00013 6.22872 3.0001 9.99988L3.00006 14.5C3.00003 17.7874 3.00002 19.4312 3.90794 20.5375C4.07418 20.7401 4.25992 20.9258 4.46249 21.0921C5.56883 22 7.21255 22 10.5 22" />
-          <path d="M7 7H15M7 11H11" />
-          <path d="M18 18.5L16.5 17.95V15.5M12 17.5C12 19.9853 14.0147 22 16.5 22C18.9853 22 21 19.9853 21 17.5C21 15.0147 18.9853 13 16.5 13C14.0147 13 12 15.0147 12 17.5Z" />
-        </svg>
-      );
-    case 'search':
+        case 'search':
       return (
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" className={cls} stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
           <path d="M17 17L21 21" />
@@ -261,7 +252,7 @@ const ProfileDropdown = ({
   const containerRef = useRef(null);
   const leaveTimer = useRef(null);
 
-  const isActive = currentPage === 'history';
+  const isActive = false;
   const label = 'Profile';
   const showLabel = compact ? (hovered || isOpen) : true;
 
@@ -402,12 +393,6 @@ const ProfileDropdown = ({
                   icon={<NavIcon name="user" />}
                   label="Edit Profile"
                   onClick={() => doAction(onEditProfile)}
-                />
-                <DropdownItem
-                  icon={<NavIcon name="history" isActive={currentPage === 'history'} />}
-                  label="History"
-                  active={currentPage === 'history'}
-                  onClick={() => doAction(() => onNavigate('/history'))}
                 />
               </div>
             </>

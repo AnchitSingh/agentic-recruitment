@@ -121,21 +121,6 @@ function CategoryButton({ cat, isActive, onClick }) {
         </span>
       </button>
 
-      {/* Link to full topic page */}
-      {isActive && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            navigate(`/topic/${toTopicSlug(cat.label)}`);
-          }}
-          className="p-2 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-amber-600 transition-all"
-          title={`View all ${cat.label} content`}
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
-        </button>
-      )}
-    </div>
+          </div>
   );
 }

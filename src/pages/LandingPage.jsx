@@ -7,21 +7,12 @@ import '../styles/animations.css';
 // Import extracted components
 import { HeroSection } from '../components/landing/Hero/HeroSection';
 import { QuizBrowserSection } from '../components/landing/QuizBrowser/QuizBrowserSection';
-import { ExploreByExam } from '../components/home/ExploreByExam';
-import { ExploreByStudyPackage } from '../components/home/ExploreByStudyPackage';
-import { Testimonials } from '../components/home/Testimonials';
-import { Footer } from '../components/home/Footer';
 
-// Import quiz components
-import LoggedInHeroSection from '../components/quiz/HeroSection';
-import StatsSection from '../components/quiz/StatsSection';
 
 // Import hooks
 import { useAnimations } from '../hooks/useAnimations';
 import { useQuizBrowser } from '../hooks/useQuizBrowser';
 
-// Import data
-import { quizEvents } from '../data/quizEvents';
 
 const LandingPage = () => {
     const navigate = useNavigate();
@@ -130,12 +121,7 @@ const LandingPage = () => {
                     goToPage={goToPage}
                     onSetHighlightedQuizId={setHighlightedQuizId}
                 />
-                <ExploreByExam />
-                <ExploreByStudyPackage />
-                <Testimonials />
             </main>
-
-            <Footer />
         </div>
     );
 };

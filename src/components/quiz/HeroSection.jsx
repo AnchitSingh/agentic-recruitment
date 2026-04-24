@@ -26,12 +26,6 @@ const HeroSection = ({ profile }) => {
           </div>
 
           <nav className="flex flex-wrap items-center gap-2" aria-label="Quick actions">
-            <Button size="sm" onClick={() => navigate('/paused')}>
-              Continue Learning
-            </Button>
-            <Button variant="secondary" size="sm" onClick={() => navigate('/history')}>
-              Review History
-            </Button>
             <Button variant="secondary" size="sm" onClick={() => navigate('/stats')}>
               Open Analytics
             </Button>

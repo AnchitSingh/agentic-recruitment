@@ -1,7 +1,6 @@
 import storage from '../../utils/storage';
 import { STORAGE_KEYS } from './constants';
 import { createSuccessResponse, createErrorResponse } from './helpers';
-import { dumpAnonData } from '../../lib/anonTracker';
 
 export function createQuizConfig(config) {
     return {
@@ -128,8 +127,6 @@ export async function completeQuiz(quizId, answers, quiz) {
         // └───────────────────────────────────────────────┘
         storage.forceSync().catch(() => {});
 
-        // Track anonymous user data
-        dumpAnonData();
 
         return createSuccessResponse({ ...results, quiz });
     } catch (error) {

@@ -22,14 +22,6 @@ const RecentActivitySection = ({ history, recentHistory }) => {
           <span className="text-blue-500">{Icons.history}</span>
           Recent Activity
         </h2>
-        {history.length > 0 && (
-          <button
-            className="text-sm font-medium text-amber-700 hover:text-amber-800 transition-colors"
-            onClick={() => navigate('/history')}
-          >
-            All history
-          </button>
-        )}
       </div>
 
       {recentHistory.length === 0 ? (
@@ -41,12 +33,9 @@ const RecentActivitySection = ({ history, recentHistory }) => {
       ) : (
         <div className="space-y-2">
           {recentHistory.map((entry, idx) => (
-            <button
+            <div
               key={entry.id ?? idx}
-              onClick={() => navigate('/history')}
-              className="w-full text-left rounded-xl border border-slate-100 p-3
-                         hover:border-amber-200 hover:bg-amber-50/30 transition-all duration-200
-                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              className="w-full text-left rounded-xl border border-slate-100 p-3"
             >
               <p className="font-medium text-sm text-slate-800 truncate">{entry.title || 'Untitled Quiz'}</p>
               <div className="flex items-center justify-between mt-1">
@@ -57,7 +46,7 @@ const RecentActivitySection = ({ history, recentHistory }) => {
                   </Badge>
                 )}
               </div>
-            </button>
+            </div>
           ))}
         </div>
       )}

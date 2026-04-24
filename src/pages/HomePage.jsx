@@ -187,10 +187,7 @@ const HomePage = () => {
 
     // Handle search result selection from GlobalHeader
     const handleSearchResultSelect = (result) => {
-        if (result.type === 'category') {
-            // Navigate to topic page
-            navigate(`/topic/${result.id}`);
-        } else if (result.type === 'quiz' && result.slug) {
+        if (result.type === 'quiz' && result.slug) {
             // Start the quiz
             handleStartQuiz(result.slug);
         }

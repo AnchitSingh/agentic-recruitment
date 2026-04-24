@@ -6,10 +6,6 @@ import { WelcomeSection } from '../components/home/WelcomeSection';
 import { ContinueStudying } from '../components/home/ContinueStudying';
 import { RecentlyViewed } from '../components/home/RecentlyViewed';
 import { QuizBrowserSection } from '../components/landing/QuizBrowser/QuizBrowserSection';
-import { ExploreByExam } from '../components/home/ExploreByExam';
-import { ExploreByStudyPackage } from '../components/home/ExploreByStudyPackage';
-import { Testimonials } from '../components/home/Testimonials';
-import { Footer } from '../components/home/Footer';
 import { useQuizBrowser } from '../hooks/useQuizBrowser';
 
 const HomePage = () => {
@@ -62,13 +58,7 @@ const HomePage = () => {
           onStartQuiz={handleStartQuiz}
           onSetHighlightedQuizId={setHighlightedQuizId}
         />
-
-        <ExploreByExam />
-        <ExploreByStudyPackage />
-        <Testimonials />
       </main>
-
-      <Footer />
     </div>
   );
 };

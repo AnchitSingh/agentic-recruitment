@@ -9,8 +9,6 @@ import { backgrounds, cn } from '../utils/designTokens';
 
 // Import components from LandingPage
 import { QuizBrowserSection } from '../components/landing/QuizBrowser/QuizBrowserSection';
-import { ExploreByExam } from '../components/home/ExploreByExam';
-import { ExploreByStudyPackage } from '../components/home/ExploreByStudyPackage';
 
 // Import hooks
 import { useQuizBrowser } from '../hooks/useQuizBrowser';
@@ -116,8 +114,6 @@ const QuizCatalogPage = () => {
           goToPage={goToPage}
           onSetHighlightedQuizId={setHighlightedQuizId}
         />
-        <ExploreByExam />
-        <ExploreByStudyPackage />
       </main>
     </div>
   );

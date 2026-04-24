@@ -32,15 +32,7 @@ const ContinueLearningSection = ({ pausedQuizzes, continueQuizzes }) => {
           <span className="text-amber-500">{Icons.play}</span>
           Continue Learning
         </h2>
-        {pausedQuizzes.length > 3 && (
-          <button
-            className="text-sm font-medium text-amber-700 hover:text-amber-800 transition-colors"
-            onClick={() => navigate('/paused')}
-          >
-            View all ({pausedQuizzes.length})
-          </button>
-        )}
-      </div>
+              </div>
 
       {continueQuizzes.length === 0 ? (
         <EmptyState
