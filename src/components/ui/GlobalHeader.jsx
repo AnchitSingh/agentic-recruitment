@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '../../contexts/ProfileContext';
-import SearchModal from './SearchModal';
+import JDSearchModal from './JDSearchModal';
 
 /* ═══════════════════════════════════════════════════════════════════
    Navigation — Balanced layout: 3 · SEARCH · 3
@@ -208,10 +208,10 @@ const SearchBadge = ({ onClick, compact = false }) => (
       shadow-md shadow-amber-500/25 hover:shadow-lg hover:shadow-amber-500/35
       active:scale-[0.97] transition-all duration-200
       ${compact ? 'mx-1.5 sm:mx-2.5 px-3 sm:px-4 h-10' : 'mx-3 px-5 h-10'}`}
-    aria-label={`Search (${IS_MAC ? '⌘' : 'Ctrl+'}K)`}
+    aria-label={`Parse Job Description (${IS_MAC ? '⌘' : 'Ctrl+'}K)`}
   >
     <NavIcon name="search" light />
-    <span className={`font-semibold text-sm ${compact ? 'hidden sm:inline ml-0 sm:ml-2' : 'ml-2'}`}>Search</span>
+    <span className={`font-semibold text-sm ${compact ? 'hidden sm:inline ml-0 sm:ml-2' : 'ml-2'}`}>Parse JD</span>
     {!compact && (
       <kbd className="hidden xl:inline-flex items-center ml-2 text-[10px] font-sans font-normal bg-white/20 backdrop-blur-sm rounded-md px-1.5 py-0.5 opacity-70 group-hover:opacity-100 transition-opacity">
         {IS_MAC ? '⌘' : 'Ctrl+'}K
@@ -410,7 +410,7 @@ const ProfileDropdown = ({
 const GlobalHeader = ({ currentPage = 'home', onProfileUpdate, onSearchSelect }) => {
   const navigate = useNavigate();
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [showSearchModal, setShowSearchModal] = useState(false);
+  const [showJDModal, setShowJDModal] = useState(false);
   const { profile, updateProfileName } = useProfile();
 
   const profileName = profile?.name || 'Guest';
@@ -418,7 +418,7 @@ const GlobalHeader = ({ currentPage = 'home', onProfileUpdate, onSearchSelect })
   /* ── ⌘K / Ctrl+K ── */
   useEffect(() => {
     const h = (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); setShowSearchModal(true); }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); setShowJDModal(true); }
     };
     document.addEventListener('keydown', h);
     return () => document.removeEventListener('keydown', h);
@@ -430,24 +430,22 @@ const GlobalHeader = ({ currentPage = 'home', onProfileUpdate, onSearchSelect })
     setShowProfileModal(false);
   }, [updateProfileName, onProfileUpdate]);
 
-  const handleSearchSelect = useCallback((r) => {
-    onSearchSelect?.(r);
-    setShowSearchModal(false);
+  const handleJDExtracted = useCallback((jdData) => {
+    console.log('🎉 JD data extracted in GlobalHeader:', jdData);
+    // Pass extracted JD data to parent component
+    onSearchSelect?.(jdData);
   }, [onSearchSelect]);
 
   useEffect(() => {
-    // Listen for custom events to open search modal with pre-filled query
-    const handleOpenSearch = (e) => {
-      console.log('openSearchModal event received:', e.detail);
-      setShowSearchModal(true);
-      // Store the query to be used when modal opens
-      window.searchModalPrefill = e.detail?.query || '';
-      console.log('Set window.searchModalPrefill to:', window.searchModalPrefill);
+    // Listen for custom events to open JD modal
+    const handleOpenJD = (e) => {
+      console.log('openJDModal event received:', e.detail);
+      setShowJDModal(true);
     };
-    window.addEventListener('openSearchModal', handleOpenSearch);
+    window.addEventListener('openJDModal', handleOpenJD);
     
     return () => {
-      window.removeEventListener('openSearchModal', handleOpenSearch);
+      window.removeEventListener('openJDModal', handleOpenJD);
     };
   }, []);
 
@@ -487,7 +485,7 @@ const GlobalHeader = ({ currentPage = 'home', onProfileUpdate, onSearchSelect })
             </div>
 
             {/* Centre — Search */}
-            <SearchBadge onClick={() => setShowSearchModal(true)} />
+            <SearchBadge onClick={() => setShowJDModal(true)} />
 
             {/* Right — 2 items + Profile dropdown = 3 slots */}
             <div className="flex items-center space-x-1 pr-1">
@@ -509,7 +507,7 @@ const GlobalHeader = ({ currentPage = 'home', onProfileUpdate, onSearchSelect })
               ))}
             </div>
 
-            <SearchBadge onClick={() => setShowSearchModal(true)} compact />
+            <SearchBadge onClick={() => setShowJDModal(true)} compact />
 
             <div className="flex items-center space-x-0.5 pr-0.5">
               {RIGHT_NAV.map((item) => (
@@ -534,10 +532,10 @@ const GlobalHeader = ({ currentPage = 'home', onProfileUpdate, onSearchSelect })
         onSubmit={handleProfileSubmit}
       />
 
-      <SearchModal
-        isOpen={showSearchModal}
-        onClose={() => setShowSearchModal(false)}
-        onResultSelect={handleSearchSelect}
+      <JDSearchModal
+        isOpen={showJDModal}
+        onClose={() => setShowJDModal(false)}
+        onJDExtracted={handleJDExtracted}
       />
     </>
   );
