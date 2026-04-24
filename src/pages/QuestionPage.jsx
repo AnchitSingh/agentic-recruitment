@@ -1,7 +1,6 @@
 import React, { useState, useEffect, memo, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuestion } from '../hooks/useQuestion';
-import { useAuth } from '../contexts/AuthContext';
 import BackgroundEffects from '../components/ui/BackgroundEffects';
 import GlobalHeader from '../components/ui/GlobalHeader';
 import { backgrounds, cn } from '../utils/designTokens';
@@ -256,7 +255,6 @@ export default function QuestionPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { data, loading, error } = useQuestion(slug);
-  const { user } = useAuth();
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [revealed, setRevealed] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);

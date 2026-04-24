@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '../../contexts/ProfileContext';
-import { useAuth } from '../../contexts/AuthContext';
-import AuthModal from './AuthModal';
 import SearchModal from './SearchModal';
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -251,12 +249,12 @@ const DropdownItem = ({ icon, label, active = false, danger = false, onClick }) 
 
 /* ═══════════════════════════════════════════════════════════════════
    ProfileDropdown — 3rd right-side slot
-   "Profile" (logged in) or "Login" (logged out)
+   Shows profile information with edit option
    Moving orange gradient text · hover/click dropdown
    ═══════════════════════════════════════════════════════════════════ */
 const ProfileDropdown = ({
-  user, currentPage, compact = false,
-  onNavigate, onEditProfile, onLogin, onSignup, onLogout,
+  currentPage, compact = false,
+  onNavigate, onEditProfile,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -264,7 +262,7 @@ const ProfileDropdown = ({
   const leaveTimer = useRef(null);
 
   const isActive = currentPage === 'history';
-  const label = user ? 'Profile' : 'Login';
+  const label = 'Profile';
   const showLabel = compact ? (hovered || isOpen) : true;
 
   /* Close on outside click */
@@ -383,76 +381,36 @@ const ProfileDropdown = ({
                           shadow-black/[0.08] border border-gray-100 py-1"
             style={{ animation: 'dropdownSlideIn 0.18s ease-out' }}>
 
-            {user ? (
-              /* ──────── Signed-in menu ──────── */
-              <>
-                {/* User card */}
-                <div className="px-4 py-3 border-b border-gray-100/80">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500
-                                    flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
-                      {(user.email || '?').charAt(0).toUpperCase()}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-gray-800 truncate">{user.email}</p>
-                      <p className="text-[11px] text-gray-400">Signed in</p>
-                    </div>
+            {/* ──────── Profile menu ──────── */}
+            <>
+              {/* User card */}
+              <div className="px-4 py-3 border-b border-gray-100/80">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500
+                                  flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+                    {'G'}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-gray-800 truncate">Guest User</p>
+                    <p className="text-[11px] text-gray-400">Talent Scout Platform</p>
                   </div>
                 </div>
+              </div>
 
-                <div className="py-1">
-                  <DropdownItem
-                    icon={<NavIcon name="user" />}
-                    label="Edit Profile"
-                    onClick={() => doAction(onEditProfile)}
-                  />
-                  <DropdownItem
-                    icon={<NavIcon name="history" isActive={currentPage === 'history'} />}
-                    label="History"
-                    active={currentPage === 'history'}
-                    onClick={() => doAction(() => onNavigate('/history'))}
-                  />
-                </div>
-
-                <div className="border-t border-gray-100/80 py-1">
-                  <DropdownItem
-                    icon={
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                      </svg>
-                    }
-                    label="Logout"
-                    danger
-                    onClick={() => doAction(onLogout)}
-                  />
-                </div>
-              </>
-            ) : (
-              /* ──────── Signed-out menu ──────── */
               <div className="py-1">
                 <DropdownItem
-                  icon={
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                      strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                  }
-                  label="Login"
-                  onClick={() => doAction(onLogin)}
+                  icon={<NavIcon name="user" />}
+                  label="Edit Profile"
+                  onClick={() => doAction(onEditProfile)}
                 />
                 <DropdownItem
-                  icon={
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                      strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                    </svg>
-                  }
-                  label="Sign Up"
-                  onClick={() => doAction(onSignup)}
+                  icon={<NavIcon name="history" isActive={currentPage === 'history'} />}
+                  label="History"
+                  active={currentPage === 'history'}
+                  onClick={() => doAction(() => onNavigate('/history'))}
                 />
               </div>
-            )}
+            </>
           </div>
         </div>
       )}
@@ -466,14 +424,11 @@ const ProfileDropdown = ({
    ═══════════════════════════════════════════════════════════════════ */
 const GlobalHeader = ({ currentPage = 'home', onProfileUpdate, onSearchSelect }) => {
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authMode, setAuthMode] = useState('login');
   const { profile, updateProfileName } = useProfile();
 
-  const profileName = user?.email || profile?.name || 'Guest';
+  const profileName = profile?.name || 'Guest';
 
   /* ── ⌘K / Ctrl+K ── */
   useEffect(() => {
@@ -495,16 +450,7 @@ const GlobalHeader = ({ currentPage = 'home', onProfileUpdate, onSearchSelect })
     setShowSearchModal(false);
   }, [onSearchSelect]);
 
-  const openAuth = useCallback((mode) => {
-    setAuthMode(mode);
-    setShowAuthModal(true);
-  }, []);
-
   useEffect(() => {
-    // Listen for custom events to open auth modal from other components
-    const handleOpenSignup = () => openAuth('signup');
-    window.addEventListener('openSignupModal', handleOpenSignup);
-    
     // Listen for custom events to open search modal with pre-filled query
     const handleOpenSearch = (e) => {
       console.log('openSearchModal event received:', e.detail);
@@ -516,10 +462,9 @@ const GlobalHeader = ({ currentPage = 'home', onProfileUpdate, onSearchSelect })
     window.addEventListener('openSearchModal', handleOpenSearch);
     
     return () => {
-      window.removeEventListener('openSignupModal', handleOpenSignup);
       window.removeEventListener('openSearchModal', handleOpenSearch);
     };
-  }, [openAuth]);
+  }, []);
 
   /* ── Desktop item renderer ── */
   const renderDesktopItem = (item) => {
@@ -563,13 +508,9 @@ const GlobalHeader = ({ currentPage = 'home', onProfileUpdate, onSearchSelect })
             <div className="flex items-center space-x-1 pr-1">
               {RIGHT_NAV.map(renderDesktopItem)}
               <ProfileDropdown
-                user={user}
                 currentPage={currentPage}
                 onNavigate={navigate}
                 onEditProfile={() => setShowProfileModal(true)}
-                onLogin={() => openAuth('login')}
-                onSignup={() => openAuth('signup')}
-                onLogout={signOut}
               />
             </div>
           </nav>
@@ -591,14 +532,10 @@ const GlobalHeader = ({ currentPage = 'home', onProfileUpdate, onSearchSelect })
                   isActive={currentPage === item.id} onClick={() => navigate(item.path)} />
               ))}
               <ProfileDropdown
-                user={user}
                 currentPage={currentPage}
                 compact
                 onNavigate={navigate}
                 onEditProfile={() => setShowProfileModal(true)}
-                onLogin={() => openAuth('login')}
-                onSignup={() => openAuth('signup')}
-                onLogout={signOut}
               />
             </div>
           </nav>
@@ -616,12 +553,6 @@ const GlobalHeader = ({ currentPage = 'home', onProfileUpdate, onSearchSelect })
         isOpen={showSearchModal}
         onClose={() => setShowSearchModal(false)}
         onResultSelect={handleSearchSelect}
-      />
-
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        defaultMode={authMode}
       />
     </>
   );

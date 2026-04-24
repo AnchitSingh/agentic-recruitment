@@ -1,11 +1,10 @@
 import React from 'react';
 import { cn } from '../../../utils/designTokens';
 import { FloatingCard } from './FloatingCard';
-import { AuthButtons } from '../Auth/AuthButtons';
 import { SocialProof } from '../SocialProof/SocialProof';
 import { TrustIndicators } from '../SocialProof/TrustIndicators';
 
-export const MobileHero = ({ entrance, onGoogleSignUp }) => {
+export const MobileHero = ({ entrance }) => {
     return (
         <section className="lg:hidden pt-8 sm:pt-12">
             <div className="text-center">
@@ -76,10 +75,7 @@ export const MobileHero = ({ entrance, onGoogleSignUp }) => {
                 <div style={entrance(4)} className="flex justify-center mb-8">
                     <SocialProof />
                 </div>
-                <div style={entrance(5)} className="mb-8 max-w-sm mx-auto">
-                    <AuthButtons isMobile onGoogleSignUp={onGoogleSignUp} />
-                </div>
-                <div style={entrance(6)}>
+                                <div style={entrance(6)}>
                     <TrustIndicators className="justify-center" />
                 </div>
             </div>

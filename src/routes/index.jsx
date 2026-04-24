@@ -1,5 +1,4 @@
 import { Routes, Route } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import IndexPage from '../pages/index';
 import QuizPage from '../pages/QuizPage';
 import QuizLoadingPage from '../pages/QuizLoadingPage';
@@ -9,25 +8,15 @@ import PausedQuizzesPage from '../pages/PausedQuizzesPage';
 import GlobalStatsPage from '../pages/GlobalStatsPage';
 import HistoryPage from '../pages/HistoryPage';
 import QuizCatalogPage from '../pages/QuizCatalogPage';
-import LoginPage from '../pages/LoginPage';
-import SignupPage from '../pages/SignupPage';
 import QuestionPage from '../pages/QuestionPage';
 import StudyPackPage from '../pages/StudyPackPage';
 import ExamStepPage from '../pages/ExamStepPage';
 import TopicPage from '../pages/TopicPage';
 
 const AppRoutes = () => {
-  const { signInWithGoogle } = useAuth();
-
-  const handleGoogleSignUp = async () => {
-    await signInWithGoogle();
-  };
-
   return (
     <Routes>
-      <Route path="/" element={<IndexPage onGoogleSignUp={handleGoogleSignUp} />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
+      <Route path="/" element={<IndexPage />} />
       <Route path="/browse" element={<QuizCatalogPage />} />
       <Route path="/quiz" element={<QuizPage />} />
       <Route path="/quiz/:slug" element={<QuizPage />} />

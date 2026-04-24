@@ -1,11 +1,10 @@
 import React from 'react';
 import { cn } from '../../../utils/designTokens';
 import { FloatingCard } from './FloatingCard';
-import { AuthButtons } from '../Auth/AuthButtons';
 import { SocialProof } from '../SocialProof/SocialProof';
 import { TrustIndicators } from '../SocialProof/TrustIndicators';
 
-export const DesktopHero = ({ entrance, onGoogleSignUp }) => {
+export const DesktopHero = ({ entrance }) => {
     return (
         <section className="hidden lg:block">
             <div className="grid grid-cols-2 gap-16 xl:gap-20 items-center min-h-[calc(100vh-100px)]">
@@ -33,10 +32,7 @@ export const DesktopHero = ({ entrance, onGoogleSignUp }) => {
                     <div style={entrance(3)} className="mb-8">
                         <SocialProof />
                     </div>
-                    <div style={entrance(4)} className="mb-10">
-                        <AuthButtons onGoogleSignUp={onGoogleSignUp} />
-                    </div>
-                    <div style={entrance(5)}>
+                                        <div style={entrance(5)}>
                         <TrustIndicators />
                     </div>
                 </div>

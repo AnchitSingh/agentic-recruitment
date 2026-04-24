@@ -23,7 +23,7 @@ import { useQuizBrowser } from '../hooks/useQuizBrowser';
 // Import data
 import { quizEvents } from '../data/quizEvents';
 
-const LandingPage = ({ onGoogleSignUp }) => {
+const LandingPage = () => {
     const navigate = useNavigate();
 
     // Use custom hooks
@@ -95,7 +95,6 @@ const LandingPage = ({ onGoogleSignUp }) => {
                 {/* Hero Section */}
                 <HeroSection
                     entrance={entrance}
-                    onGoogleSignUp={onGoogleSignUp}
                 />
 
                 {/* Quiz Browser Section */}
