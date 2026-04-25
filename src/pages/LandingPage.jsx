@@ -3,6 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { backgrounds, cn } from '../utils/designTokens';
 import GlobalHeader from '../components/ui/GlobalHeader';
 import JDSearchModal from '../components/ui/JDSearchModal';
+import { generateJDEmbedding } from '../utils/embeddingGenerator';
+import { getTopCandidates } from '../utils/MatchEngine'; // <-- NEW IMPORT
+import candidatesDb from '../data/candidate_db_with_vectors.json'; // <-- NEW IMPORT
+
 import '../styles/animations.css';
 
 // Import extracted components
@@ -27,9 +31,26 @@ const LandingPage = () => {
     };
 
     // Handle JD extraction
-    const handleJDExtracted = (jdData) => {
+    const handleJDExtracted = async (jdData) => {
         console.log('JD data extracted:', jdData);
-        // TODO: Process the extracted JD data
+        
+        try {
+            // Generate embedding for the JD using jd.meta.embedding_text
+            const jdWithEmbedding = await generateJDEmbedding(jdData);
+            console.log('JD with embedding vector:', jdWithEmbedding);
+
+             // 2. RUN THE HYBRID SEARCH ENGINE
+            console.log('Running Match Engine against candidates...');
+            const top5 = getTopCandidates(jdWithEmbedding, candidatesDb);
+            
+            console.log('🎯 Top 5 Candidates Found:', top5);
+            setShortlistedCandidates(top5);
+            
+            // 3. Close modal to show results (You'll need a UI for this next)
+            setShowJDModal(false);
+        } catch (error) {
+            console.error('Failed to generate JD embedding:', error);
+        }
     };
 
     // Open JD modal
