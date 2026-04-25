@@ -159,10 +159,11 @@ const StatBar = ({ label, value }) => (
  * @param {number} props.index - Index in the results list (for ranking display)
  * @param {Function} props.onViewChat - Callback when user clicks to view chat, receives candidate_id
  * @param {Object} props.outreachProgress - Object tracking outreach progress by candidate_id
+ * @param {string} props.outreachState - Current outreach state ('idle', 'running', 'done', 'error')
  * @param {boolean} props.showCombinedScores - Whether to show combined match+interest scores
  * @returns {JSX.Element} Rendered candidate card
  */
-const CandidateCard = ({ result, index, onViewChat, outreachProgress, showCombinedScores }) => {
+const CandidateCard = ({ result, index, onViewChat, outreachProgress, outreachState, showCombinedScores }) => {
   const [expanded, setExpanded] = useState(false);
   const { candidate, matchScore, scoreBreakdown, explanation, interestScore, combinedScore, interestLevel, matchExplanation, matchBreakdown } = result;
 
@@ -308,12 +309,12 @@ const CandidateCard = ({ result, index, onViewChat, outreachProgress, showCombin
 
         <button
           onClick={() => onViewChat(candidate.candidate_id)}
-          disabled={outreachProgress?.[candidate.candidate_id] === 'running'}
+          disabled={outreachState !== 'done' || outreachProgress?.[candidate.candidate_id] === 'running'}
           className={cn(
             components.button.base,
             components.button.variants.primary,
             'text-sm px-5 h-9 min-h-0 rounded-xl gap-1.5',
-            outreachProgress?.[candidate.candidate_id] === 'running' && 'opacity-50 cursor-not-allowed'
+            (outreachState !== 'done' || outreachProgress?.[candidate.candidate_id] === 'running') && 'opacity-50 cursor-not-allowed'
           )}
         >
           {outreachProgress?.[candidate.candidate_id] === 'running' ? (
@@ -678,6 +679,7 @@ const ResultsPage = () => {
               index={index}
               onViewChat={setSelectedChat}
               outreachProgress={outreachProgress}
+              outreachState={outreachState}
               showCombinedScores={outreachState === 'done'}
             />
           ))}
