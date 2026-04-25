@@ -9,12 +9,22 @@ import { ChatViewModal } from '../components/ui/ChatViewModal';
 
 // ─── Icons ─────────────────────────────────────────────────────────────────────
 
+/**
+ * BackIcon - Back arrow icon for navigation.
+ * @returns {JSX.Element} Rendered back icon
+ */
 const BackIcon = () => (
   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
   </svg>
 );
 
+/**
+ * ChevronDown - Chevron icon that rotates when open.
+ * @param {Object} props - Component props
+ * @param {boolean} props.open - Whether the chevron should be rotated (open state)
+ * @returns {JSX.Element} Rendered chevron icon
+ */
 const ChevronDown = ({ open }) => (
   <svg
     className={cn('w-3.5 h-3.5 transition-transform duration-200', open ? 'rotate-180' : '')}
@@ -24,12 +34,20 @@ const ChevronDown = ({ open }) => (
   </svg>
 );
 
+/**
+ * CheckIcon - Checkmark icon for success states.
+ * @returns {JSX.Element} Rendered check icon
+ */
 const CheckIcon = () => (
   <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 13.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
   </svg>
 );
 
+/**
+ * XIcon - X icon for error or close states.
+ * @returns {JSX.Element} Rendered X icon
+ */
 const XIcon = () => (
   <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
     <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -38,6 +56,11 @@ const XIcon = () => (
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
+/**
+ * scoreConfig - Returns color configuration based on match score.
+ * @param {number} score - Match score (0-100)
+ * @returns {Object} Configuration object with ring color, text color class, and label
+ */
 const scoreConfig = (score) => {
   if (score >= 85) return { ring: '#22c55e', text: 'text-green-600', label: 'Excellent' };
   if (score >= 70) return { ring: '#f59e0b', text: 'text-amber-600', label: 'Strong' };
@@ -45,6 +68,10 @@ const scoreConfig = (score) => {
   return { ring: '#94a3b8', text: 'text-slate-400', label: 'Fair' };
 };
 
+/**
+ * tagVariants - CSS class variants for colored tags.
+ * Maps color names to their corresponding Tailwind classes.
+ */
 const tagVariants = {
   green: 'bg-green-50  text-green-700  ring-1 ring-green-200/80',
   blue: 'bg-blue-50   text-blue-700   ring-1 ring-blue-200/80',
@@ -55,6 +82,14 @@ const tagVariants = {
 
 // ─── Arc Score Badge ────────────────────────────────────────────────────────────
 
+/**
+ * ScoreArc - Circular progress indicator showing match score as an arc.
+ * Displays score with color-coded ring based on performance level.
+ *
+ * @param {Object} props - Component props
+ * @param {number} props.score - Match score (0-100)
+ * @returns {JSX.Element} Rendered score arc component
+ */
 const ScoreArc = ({ score }) => {
   const cfg = scoreConfig(score);
   const r = 28;
@@ -80,6 +115,15 @@ const ScoreArc = ({ score }) => {
 
 // ─── Stat Bar ──────────────────────────────────────────────────────────────────
 
+/**
+ * StatBar - Horizontal progress bar for displaying individual score components.
+ * Shows label, visual bar, and percentage value.
+ *
+ * @param {Object} props - Component props
+ * @param {string} props.label - Label text for the stat
+ * @param {number} props.value - Value between 0-1 (will be displayed as percentage)
+ * @returns {JSX.Element} Rendered stat bar component
+ */
 const StatBar = ({ label, value }) => (
   <div className="flex items-center gap-3">
     <span className="text-xs text-slate-400 w-28 flex-shrink-0">{label}</span>
@@ -97,6 +141,27 @@ const StatBar = ({ label, value }) => (
 
 // ─── Candidate Card ─────────────────────────────────────────────────────────────
 
+/**
+ * CandidateCard - Card component displaying a candidate's match information.
+ * Shows candidate details, match score, skills, and allows viewing chat transcripts.
+ *
+ * @param {Object} props - Component props
+ * @param {Object} props.result - Candidate result object containing:
+ *   - candidate: Full candidate profile object
+ *   - matchScore: Overall match score (0-100)
+ *   - scoreBreakdown: Individual score components
+ *   - explanation: Match explanation with tags and notes
+ *   - interestScore: Interest score from conversations
+ *   - combinedScore: Combined match and interest score
+ *   - interestLevel: Interest level string
+ *   - matchExplanation: Alternative explanation from final shortlist
+ *   - matchBreakdown: Alternative score breakdown from final shortlist
+ * @param {number} props.index - Index in the results list (for ranking display)
+ * @param {Function} props.onViewChat - Callback when user clicks to view chat, receives candidate_id
+ * @param {Object} props.outreachProgress - Object tracking outreach progress by candidate_id
+ * @param {boolean} props.showCombinedScores - Whether to show combined match+interest scores
+ * @returns {JSX.Element} Rendered candidate card
+ */
 const CandidateCard = ({ result, index, onViewChat, outreachProgress, showCombinedScores }) => {
   const [expanded, setExpanded] = useState(false);
   const { candidate, matchScore, scoreBreakdown, explanation, interestScore, combinedScore, interestLevel, matchExplanation, matchBreakdown } = result;
@@ -309,6 +374,11 @@ const CandidateCard = ({ result, index, onViewChat, outreachProgress, showCombin
 
 // ─── Skeleton Loader ─────────────────────────────────────────────────────────────
 
+/**
+ * SkeletonCard - Loading placeholder for candidate cards.
+ * Displays animated skeleton elements while data is loading.
+ * @returns {JSX.Element} Rendered skeleton card
+ */
 const SkeletonCard = () => (
   <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
     <div className="p-6 pb-4">
@@ -345,6 +415,13 @@ const SkeletonCard = () => (
 
 // ─── Results Page ───────────────────────────────────────────────────────────────
 
+/**
+ * ResultsPage - Main page displaying ranked candidate matches for a job description.
+ * Features candidate cards with match scores, agentic negotiations, and chat view modal.
+ * Supports both initial matching and final shortlist with combined scores.
+ *
+ * @returns {JSX.Element} Rendered results page
+ */
 const ResultsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();

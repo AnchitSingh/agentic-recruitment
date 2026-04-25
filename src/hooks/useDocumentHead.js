@@ -2,6 +2,14 @@
 
 import { useEffect } from 'react';
 
+/**
+ * useDocumentHead - Custom hook for managing document head metadata.
+ * Updates the document title and meta description tag.
+ *
+ * @param {Object} params - Metadata parameters
+ * @param {string} [params.title] - Document title to set
+ * @param {string} [params.description] - Meta description to set
+ */
 export function useDocumentHead({ title, description }) {
 	useEffect(() => {
 		if (title) {

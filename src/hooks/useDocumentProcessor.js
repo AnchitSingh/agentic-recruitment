@@ -2,9 +2,17 @@ import { useState, useCallback } from 'react';
 import { processFiles, createPreviewURL, revokePreviewURL } from '../utils/buggu/pdfProcessor';
 
 /**
- * Hook for document processing functionality
+ * useDocumentProcessor - Custom hook for document processing functionality.
+ * Handles file uploads, text input, preview generation, and processing state management.
+ *
  * @param {Object} options - Processing options
- * @returns {Object} - Processing state and functions
+ * @param {Function} [options.onSuccess] - Callback when processing succeeds, receives processed items
+ * @param {Function} [options.onError] - Callback when processing fails, receives error object
+ * @returns {Object} Processing state and functions:
+ *   - State: files, processedItems, previewUrls, loading, error
+ *   - Actions: processUploadedFiles, processTextInput, clearAll
+ *   - Getters: getImageBlobs, getTextContent, getProcessedItems
+ *   - Computed: hasContent, imageCount, textCount, totalCount
  */
 export function useDocumentProcessor(options = {}) {
 	const [files, setFiles] = useState([]);
@@ -13,7 +21,12 @@ export function useDocumentProcessor(options = {}) {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 
-	// Process uploaded files
+	/**
+	 * processUploadedFiles - Processes uploaded files (PDFs, images, etc.).
+	 * Generates processed items and preview URLs for images.
+	 *
+	 * @param {FileList|File[]} uploadedFiles - Files to process
+	 */
 	const processUploadedFiles = useCallback(async (uploadedFiles) => {
 		if (!uploadedFiles || uploadedFiles.length === 0) {
 			setError('No files provided');
@@ -53,7 +66,12 @@ export function useDocumentProcessor(options = {}) {
 		}
 	}, [options.onSuccess, options.onError]);
 
-	// Process text input
+	/**
+	 * processTextInput - Processes raw text input as a document.
+	 * Creates a text blob and adds it to processed items.
+	 *
+	 * @param {string} text - Text content to process
+	 */
 	const processTextInput = useCallback(async (text) => {
 		if (!text || !text.trim()) {
 			setError('No text provided');
@@ -94,7 +112,9 @@ export function useDocumentProcessor(options = {}) {
 		}
 	}, [options.onSuccess, options.onError]);
 
-	// Clear all processed data
+	/**
+	 * clearAll - Clears all processed data and revokes preview URLs to free memory.
+	 */
 	const clearAll = useCallback(() => {
 		setFiles([]);
 		setProcessedItems([]);
@@ -106,18 +126,27 @@ export function useDocumentProcessor(options = {}) {
 		setError(null);
 	}, [previewUrls]);
 
-	// Get image blobs for AI processing
+	/**
+	 * getImageBlobs - Returns array of image blobs for AI processing.
+	 * @returns {Blob[]} Array of image blobs
+	 */
 	const getImageBlobs = useCallback(() => {
 		return processedItems.map(item => item.blob);
 	}, [processedItems]);
 
-	// Get text content for AI processing
+	/**
+	 * getTextContent - Returns concatenated text content from all text items.
+	 * @returns {string} Combined text content
+	 */
 	const getTextContent = useCallback(() => {
 		const textItems = processedItems.filter(item => item.type === 'text');
 		return textItems.map(item => item.text).join('\n\n');
 	}, [processedItems]);
 
-	// Get all items for AI processing
+	/**
+	 * getProcessedItems - Returns all processed items (images and text).
+	 * @returns {Object[]} Array of processed item objects
+	 */
 	const getProcessedItems = useCallback(() => {
 		return processedItems;
 	}, [processedItems]);

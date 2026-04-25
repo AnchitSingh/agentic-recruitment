@@ -7,10 +7,21 @@ import '../styles/animations.css';
 // Import extracted components
 import { HeroSection } from '../components/landing/Hero/HeroSection';
 
-
+/**
+ * LandingPage - Main landing page for the agentic recruitment application.
+ * Displays hero section with JD search modal for parsing job descriptions.
+ *
+ * @returns {JSX.Element} Rendered landing page
+ */
 const LandingPage = () => {
     const [showJDModal, setShowJDModal] = useState(false);
 
+    /**
+     * handleJDExtracted - Callback when JD is successfully extracted from modal.
+     * Navigation is handled within JDSearchModal, this is for logging/debugging.
+     *
+     * @param {Object} jdData - Extracted job description data
+     */
     const handleJDExtracted = async (jdData) => {
         console.log('JD extracted:', jdData);
         // Navigation now happens in JDSearchModal, ResultsPage handles matching
@@ -49,6 +60,9 @@ const LandingPage = () => {
     //   }
     // }
     // Open JD modal
+    /**
+     * handleOpenJDModal - Opens the JD search modal for parsing job descriptions.
+     */
     const handleOpenJDModal = () => {
         setShowJDModal(true);
     };
