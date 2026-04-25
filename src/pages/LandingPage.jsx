@@ -1,11 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { backgrounds, cn } from '../utils/designTokens';
-import GlobalHeader from '../components/ui/GlobalHeader';
 import JDSearchModal from '../components/ui/JDSearchModal';
-import { generateJDEmbedding } from '../utils/embeddingGenerator';
-import { getTopCandidates } from '../utils/MatchEngine'; // <-- NEW IMPORT
-import candidatesDb from '../data/candidate_db_with_vectors.json'; // <-- NEW IMPORT
 
 import '../styles/animations.css';
 
@@ -13,16 +9,9 @@ import '../styles/animations.css';
 import { HeroSection } from '../components/landing/Hero/HeroSection';
 
 
-// Import hooks
-import { useAnimations } from '../hooks/useAnimations';
-
-
 const LandingPage = () => {
     const navigate = useNavigate();
     const [showJDModal, setShowJDModal] = useState(false);
-
-    // Use custom hooks
-    const { mounted, entrance, currentSlide, setCurrentSlide, sliderPaused, setSliderPaused } = useAnimations();
 
     // Handle search result selection
     const handleSearchResultSelect = (result) => {
@@ -91,14 +80,10 @@ const LandingPage = () => {
                 />
             </div>
 
-            {/* Header */}
-            <GlobalHeader currentPage="landing" onSearchSelect={handleSearchResultSelect} />
-
             {/* Main Content */}
             <main className="relative pt-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Hero Section */}
                 <HeroSection
-                    entrance={entrance}
                     onOpenJDModal={handleOpenJDModal}
                 />
 

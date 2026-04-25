@@ -5,12 +5,12 @@ import { SocialProof } from '../SocialProof/SocialProof';
 import { TrustIndicators } from '../SocialProof/TrustIndicators';
 import { AuthButtons } from '../Action/ActionButtons';
 
-export const DesktopHero = ({ entrance, onOpenJDModal }) => {
+export const DesktopHero = ({ onOpenJDModal }) => {
     return (
         <section className="hidden lg:block">
             <div className="grid grid-cols-2 gap-16 xl:gap-20 items-center min-h-[calc(100vh-100px)]">
                 <div className="py-16">
-                    <div style={entrance(1)}>
+                    <div>
                         <h1 className="text-5xl xl:text-6xl font-display font-bold tracking-tight leading-[1.08] mb-6">
                             The most
                             <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 bg-clip-text text-transparent">
@@ -20,7 +20,7 @@ export const DesktopHero = ({ entrance, onOpenJDModal }) => {
                             AI talent scout
                         </h1>
                     </div>
-                    <div style={entrance(2)}>
+                    <div>
                         <p className="text-xl leading-relaxed mb-8 text-slate-500 max-w-lg">
                             AI-powered candidate discovery and engagement across all industries
                             with{' '}
@@ -30,13 +30,13 @@ export const DesktopHero = ({ entrance, onOpenJDModal }) => {
                             and finds the perfect talent, faster.
                         </p>
                     </div>
-                    <div style={entrance(3)} className="mb-8">
+                    <div className="mb-8">
                         <SocialProof />
                     </div>
-                    <div style={entrance(4)} className="mb-10">
+                    <div className="mb-10">
                         <AuthButtons onOpenJDModal={onOpenJDModal} />
                     </div>
-                                        <div style={entrance(5)}>
+                                        <div>
                         <TrustIndicators />
                     </div>
                 </div>
@@ -46,7 +46,6 @@ export const DesktopHero = ({ entrance, onOpenJDModal }) => {
                     </div>
                     <div
                         className="relative z-10 animate-float"
-                        style={entrance(2, 200)}
                     >
                         <img
                             src="/assets/i3.avif"

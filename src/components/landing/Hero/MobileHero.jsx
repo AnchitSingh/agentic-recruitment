@@ -4,11 +4,11 @@ import { FloatingCard } from './FloatingCard';
 import { SocialProof } from '../SocialProof/SocialProof';
 import { TrustIndicators } from '../SocialProof/TrustIndicators';
 import { AuthButtons } from '../Action/ActionButtons';
-export const MobileHero = ({ entrance, onOpenJDModal }) => {
+export const MobileHero = ({ onOpenJDModal }) => {
     return (
         <section className="lg:hidden pt-8 sm:pt-12">
             <div className="text-center">
-                <div style={entrance(1)}>
+                <div>
                     <h1 className="text-4xl sm:text-5xl font-display font-bold tracking-tight leading-[1.1] mb-5">
                         The most
                         <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 bg-clip-text text-transparent">
@@ -18,7 +18,7 @@ export const MobileHero = ({ entrance, onOpenJDModal }) => {
                         AI talent scout
                     </h1>
                 </div>
-                <div style={entrance(2)}>
+                <div>
                     <p className="text-lg leading-relaxed mb-8 text-slate-500 max-w-xl mx-auto">
                         AI-powered candidate discovery and engagement with{' '}
                         <span className="font-medium text-slate-700">
@@ -28,7 +28,6 @@ export const MobileHero = ({ entrance, onOpenJDModal }) => {
                     </p>
                 </div>
                 <div
-                    style={entrance(3)}
                     className="flex justify-center relative mb-10"
                 >
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -72,13 +71,13 @@ export const MobileHero = ({ entrance, onOpenJDModal }) => {
                         </div>
                     </FloatingCard>
                 </div>
-                <div style={entrance(4)} className="flex justify-center mb-8">
+                <div className="flex justify-center mb-8">
                     <SocialProof />
                 </div>
-                <div style={entrance(5)} className="mb-8 max-w-sm mx-auto">
+                <div className="mb-8 max-w-sm mx-auto">
                     <AuthButtons isMobile onOpenJDModal={onOpenJDModal} />
                 </div>
-                                <div style={entrance(6)}>
+                                <div>
                     <TrustIndicators className="justify-center" />
                 </div>
             </div>
