@@ -6,12 +6,10 @@ import '../styles/animations.css';
 
 // Import extracted components
 import { HeroSection } from '../components/landing/Hero/HeroSection';
-import { QuizBrowserSection } from '../components/landing/QuizBrowser/QuizBrowserSection';
 
 
 // Import hooks
 import { useAnimations } from '../hooks/useAnimations';
-import { useQuizBrowser } from '../hooks/useQuizBrowser';
 
 
 const LandingPage = () => {
@@ -19,47 +17,11 @@ const LandingPage = () => {
 
     // Use custom hooks
     const { mounted, entrance, currentSlide, setCurrentSlide, sliderPaused, setSliderPaused } = useAnimations();
-    const {
-        activeCategory,
-        setActiveCategory,
-        highlightedQuizId,
-        setHighlightedQuizId,
-        quizBrowserRef,
-        activeCategoryData,
-        totalQuizzes,
-        totalQuestions,
-        trendingQuizzes,
-        featuredQuizzes,
-        quizCategories,
-        filteredQuizzes,
-        paginatedQuizzes,
-        availableFilters,
-        sortOptions,
-        currentPage,
-        totalPages,
-        hasNextPage,
-        hasPreviousPage,
-        difficultyFilter,
-        setDifficultyFilter,
-        stepFilter,
-        setStepFilter,
-        sortBy,
-        setSortBy,
-        handleResultSelect,
-        handleNextPage,
-        handlePreviousPage,
-        goToPage,
-    } = useQuizBrowser();
-
-    // Handle quiz start
-    const handleStartQuiz = (quiz) => {
-        // Navigate to quiz with slug
-        navigate(`/quiz/${quiz.slug}`, { state: { quiz } });
-    };
 
     // Handle search result selection
     const handleSearchResultSelect = (result) => {
-        handleResultSelect(result);
+        // Quiz feature coming soon
+        console.log('Search result selected:', result);
     };
 
     return (
@@ -88,39 +50,6 @@ const LandingPage = () => {
                     entrance={entrance}
                 />
 
-                {/* Quiz Browser Section */}
-                <QuizBrowserSection
-                    quizBrowserRef={quizBrowserRef}
-                    activeCategory={activeCategory}
-                    setActiveCategory={setActiveCategory}
-                    highlightedQuizId={highlightedQuizId}
-                    activeCategoryData={activeCategoryData}
-                    totalQuizzes={totalQuizzes}
-                    totalQuestions={totalQuestions}
-                    quizCategories={quizCategories}
-                    filteredQuizzes={filteredQuizzes}
-                    paginatedQuizzes={paginatedQuizzes}
-                    featuredQuizzes={featuredQuizzes}
-                    trendingQuizzes={trendingQuizzes}
-                    availableFilters={availableFilters}
-                    sortOptions={sortOptions}
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    hasNextPage={hasNextPage}
-                    hasPreviousPage={hasPreviousPage}
-                    difficultyFilter={difficultyFilter}
-                    setDifficultyFilter={setDifficultyFilter}
-                    stepFilter={stepFilter}
-                    setStepFilter={setStepFilter}
-                    sortBy={sortBy}
-                    setSortBy={setSortBy}
-                    onResultSelect={handleSearchResultSelect}
-                    onStartQuiz={handleStartQuiz}
-                    onNextPage={handleNextPage}
-                    onPreviousPage={handlePreviousPage}
-                    goToPage={goToPage}
-                    onSetHighlightedQuizId={setHighlightedQuizId}
-                />
             </main>
         </div>
     );

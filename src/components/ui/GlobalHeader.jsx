@@ -11,8 +11,6 @@ import JDSearchModal from './JDSearchModal';
 
 const LEFT_NAV = [
   { id: 'home', label: 'Home', icon: 'home', path: '/' },
-  { id: 'browse', label: 'Browse', icon: 'browse', path: '/browse' },
-  { id: 'bookmarks', label: 'Bookmarks', icon: 'bookmark', path: '/bookmarks' },
 ];
 
 /* Right navigation is now empty */

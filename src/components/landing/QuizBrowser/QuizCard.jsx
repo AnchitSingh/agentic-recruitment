@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { ORGAN_VISUALS, DEFAULT_VISUAL } from '../../../data/visualConfig';
 
 export const QuizCard = ({ quiz, highlighted, onStart }) => {
@@ -11,7 +12,7 @@ export const QuizCard = ({ quiz, highlighted, onStart }) => {
 
   return (
     <div
-      onClick={() => navigate(`/quiz/${quiz.slug}`)}
+      onClick={() => toast.info('Quiz feature coming soon')}
       className={`relative bg-white rounded-2xl border overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer group ${
         highlighted
           ? 'border-amber-400 ring-2 ring-amber-200 shadow-lg shadow-amber-100/50'

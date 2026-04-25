@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { ORGAN_VISUALS, DEFAULT_VISUAL } from '../../../data/visualConfig';
 
 export const FeaturedQuizzes = ({ featured, onStartQuiz, onCategorySelect }) => {
@@ -160,7 +161,7 @@ function FeaturedCard({ quiz, rank, onStart }) {
 
   return (
     <div
-      onClick={() => navigate(`/quiz/${quiz.slug}`)}
+      onClick={() => toast.info('Quiz feature coming soon')}
       className="flex-shrink-0 w-[280px] sm:w-[300px] snap-start bg-white rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group overflow-hidden"
     >
       {/* Top gradient bar */}
