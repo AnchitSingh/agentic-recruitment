@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { backgrounds, cn } from '../utils/designTokens';
 import GlobalHeader from '../components/ui/GlobalHeader';
+import JDSearchModal from '../components/ui/JDSearchModal';
 import '../styles/animations.css';
 
 // Import extracted components
@@ -14,6 +15,7 @@ import { useAnimations } from '../hooks/useAnimations';
 
 const LandingPage = () => {
     const navigate = useNavigate();
+    const [showJDModal, setShowJDModal] = useState(false);
 
     // Use custom hooks
     const { mounted, entrance, currentSlide, setCurrentSlide, sliderPaused, setSliderPaused } = useAnimations();
@@ -22,6 +24,17 @@ const LandingPage = () => {
     const handleSearchResultSelect = (result) => {
         // Quiz feature coming soon
         console.log('Search result selected:', result);
+    };
+
+    // Handle JD extraction
+    const handleJDExtracted = (jdData) => {
+        console.log('JD data extracted:', jdData);
+        // TODO: Process the extracted JD data
+    };
+
+    // Open JD modal
+    const handleOpenJDModal = () => {
+        setShowJDModal(true);
     };
 
     return (
@@ -48,9 +61,17 @@ const LandingPage = () => {
                 {/* Hero Section */}
                 <HeroSection
                     entrance={entrance}
+                    onOpenJDModal={handleOpenJDModal}
                 />
 
             </main>
+
+            {/* JD Search Modal */}
+            <JDSearchModal
+                isOpen={showJDModal}
+                onClose={() => setShowJDModal(false)}
+                onJDExtracted={handleJDExtracted}
+            />
         </div>
     );
 };
