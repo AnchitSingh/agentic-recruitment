@@ -35,37 +35,7 @@ const LandingPage = () => {
 
     const handleJDExtracted = async (jdData) => {
         console.log('JD extracted:', jdData);
-        setMatchLoading(true);
-
-        try {
-            // Step 1: Generate JD embedding
-            const jdWithEmbedding = await generateJDEmbedding(jdData);
-            const jdVector = jdWithEmbedding.meta.embedding_vector;
-
-            // Step 2: Run hybrid matching (pure JS, no backend needed)
-            // getTopCandidates(jd, jdVector, candidates, topN)
-            const rankedCandidates = getTopCandidates(
-                jdWithEmbedding,   // full JD JSON
-                jdVector,          // Gemini embedding vector
-                candidatesDb,      // your 40 profiles with vectors
-                10                 // return top 10
-            );
-
-            console.log('Top candidates:', rankedCandidates);
-
-            // Step 3: Navigate to results page, pass data via router state
-            navigate('/results', {
-                state: {
-                    jd: jdWithEmbedding,
-                    candidates: rankedCandidates,
-                }
-            });
-
-        } catch (error) {
-            console.error('Matching failed:', error);
-        } finally {
-            setMatchLoading(false);
-        }
+        // Navigation now happens in JDSearchModal, ResultsPage handles matching
     };
     // ─── Shape of each item in rankedCandidates ───────────────────────────────────
     //

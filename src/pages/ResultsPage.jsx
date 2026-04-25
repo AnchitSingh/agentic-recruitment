@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { cn, components, backgrounds } from '../utils/designTokens';
+import { generateJDEmbedding } from '../utils/embeddingGenerator';
+import { getTopCandidates } from '../utils/MatchEngine';
+import candidatesDb from '../data/candidate_db_with_vectors.json';
 
 // ─── Icons ─────────────────────────────────────────────────────────────────────
 
@@ -238,14 +241,120 @@ const CandidateCard = ({ result, index }) => {
   );
 };
 
+// ─── Skeleton Loader ─────────────────────────────────────────────────────────────
+
+const SkeletonCard = () => (
+  <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+    <div className="p-6 pb-4">
+      <div className="flex items-start gap-4">
+        <div className="w-12 h-12 rounded-xl bg-slate-100 animate-pulse flex-shrink-0" />
+        <div className="flex-1 min-w-0 pt-0.5 space-y-2">
+          <div className="h-5 bg-slate-100 rounded-lg animate-pulse w-3/4" />
+          <div className="h-4 bg-slate-100 rounded-lg animate-pulse w-1/2" />
+        </div>
+        <div className="w-20 h-20 rounded-full bg-slate-100 animate-pulse flex-shrink-0" />
+      </div>
+      <div className="flex flex-wrap gap-1.5 mt-4">
+        <div className="h-7 bg-slate-100 rounded-full animate-pulse w-20" />
+        <div className="h-7 bg-slate-100 rounded-full animate-pulse w-24" />
+        <div className="h-7 bg-slate-100 rounded-full animate-pulse w-20" />
+      </div>
+    </div>
+    <div className="h-px bg-slate-100 mx-6" />
+    <div className="px-6 py-4 flex-1 space-y-2">
+      <div className="h-7 bg-slate-100 rounded-full animate-pulse w-16" />
+      <div className="flex flex-wrap gap-1.5">
+        <div className="h-7 bg-slate-100 rounded-full animate-pulse w-20" />
+        <div className="h-7 bg-slate-100 rounded-full animate-pulse w-24" />
+        <div className="h-7 bg-slate-100 rounded-full animate-pulse w-20" />
+      </div>
+      <div className="h-4 bg-slate-100 rounded-lg animate-pulse w-full mt-3" />
+    </div>
+    <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between gap-3">
+      <div className="h-5 bg-slate-100 rounded-lg animate-pulse w-24" />
+      <div className="h-9 bg-slate-100 rounded-xl animate-pulse w-28" />
+    </div>
+  </div>
+);
+
 // ─── Results Page ───────────────────────────────────────────────────────────────
 
 const ResultsPage = () => {
   const navigate  = useNavigate();
   const location  = useLocation();
   const { jd, candidates } = location.state || { jd: null, candidates: [] };
+  const [loading, setLoading] = useState(false);
+  const [localCandidates, setLocalCandidates] = useState(candidates);
+  const [localJd, setLocalJd] = useState(jd);
 
-  if (!candidates || candidates.length === 0) {
+  // Run matching if we have jd but no candidates
+  useEffect(() => {
+    const runMatching = async () => {
+      if (jd && (!candidates || candidates.length === 0)) {
+        setLoading(true);
+        try {
+          const jdWithEmbedding = await generateJDEmbedding(jd);
+          const jdVector = jdWithEmbedding.meta.embedding_vector;
+          const rankedCandidates = getTopCandidates(
+            jdWithEmbedding,
+            jdVector,
+            candidatesDb,
+            10
+          );
+          setLocalJd(jdWithEmbedding);
+          setLocalCandidates(rankedCandidates);
+        } catch (error) {
+          console.error('Matching failed:', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    runMatching();
+  }, [jd, candidates]);
+
+  if (loading) {
+    return (
+      <div className={cn(backgrounds.pageMinHeight, 'relative overflow-x-hidden')}>
+        <style>{`
+          @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
+        <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -left-40 w-[600px] h-[600px] bg-gradient-to-br from-amber-100/60 to-orange-100/40 rounded-full blur-3xl" />
+          <div className="absolute -bottom-40 -right-40 w-[700px] h-[700px] bg-gradient-to-tl from-orange-100/50 to-amber-50/30 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[600px] bg-gradient-to-r from-amber-50/30 to-orange-50/20 rounded-full blur-3xl" />
+        </div>
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95vw] max-w-3xl">
+          <div className="bg-white/80 backdrop-blur-lg h-14 rounded-[1.25rem] shadow-lg flex items-center px-3 gap-3">
+            <button
+              onClick={() => navigate('/')}
+              className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition-colors flex-shrink-0"
+            >
+              <BackIcon />
+            </button>
+            <div className="w-px h-5 bg-slate-200 flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <span className="text-sm font-semibold text-slate-900 truncate block leading-tight">
+                Finding matches...
+              </span>
+            </div>
+          </div>
+        </div>
+        <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 pt-28 pb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (!localCandidates || localCandidates.length === 0) {
     return (
       <div className={cn(backgrounds.pageMinHeight, 'flex items-center justify-center')}>
         <div className="text-center">
@@ -310,7 +419,7 @@ const ResultsPage = () => {
           {/* Role title */}
           <div className="flex-1 min-w-0">
             <span className="text-sm font-semibold text-slate-900 truncate block leading-tight">
-              {jd?.role?.title || 'Candidate Matches'}
+              {localJd?.role?.title || 'Candidate Matches'}
             </span>
           </div>
 
@@ -324,7 +433,7 @@ const ResultsPage = () => {
             </span>
 
             <span className="inline-flex items-center justify-center bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm shadow-amber-500/25">
-              {candidates.length} candidates
+              {localCandidates.length} candidates
             </span>
           </div>
 
@@ -334,7 +443,7 @@ const ResultsPage = () => {
       {/* ── Card grid ──────────────────────────────────────────────── */}
       <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 pt-28 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {candidates.map((result, index) => (
+          {localCandidates.map((result, index) => (
             <CandidateCard
               key={result.candidate?.candidate_id || index}
               result={result}

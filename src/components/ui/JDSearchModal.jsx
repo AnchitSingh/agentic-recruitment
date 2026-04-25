@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import { cn, components } from '../../utils/designTokens';
 import { DocumentExtractor } from '../buggu/DocumentExtractor';
 
@@ -298,10 +299,12 @@ const ReviewStep = ({ jdData, onReset }) => {
 // ─── Main Modal ─────────────────────────────────────────────────────────────────
 
 export const JDSearchModal = ({ isOpen, onClose, onJDExtracted }) => {
+  const navigate = useNavigate();
   const [step, setStep]             = useState(0);   // 0 input | 1 processing | 2 review
   const [jdData, setJdData]         = useState(null);
   const [progress, setProgress]     = useState(null);
   const [error, setError]           = useState(null);
+  const [processingStarted, setProcessingStarted] = useState(false);
 
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
@@ -312,6 +315,7 @@ export const JDSearchModal = ({ isOpen, onClose, onJDExtracted }) => {
       setJdData(null);
       setProgress(null);
       setError(null);
+      setProcessingStarted(false);
     }
   }, [isOpen]);
 
@@ -335,23 +339,31 @@ export const JDSearchModal = ({ isOpen, onClose, onJDExtracted }) => {
     setJdData(null);
     setProgress(null);
     setError(null);
+    setProcessingStarted(false);
     onClose();
   }, [onClose, step]);
 
   const handleProgress = useCallback((p) => {
     setProgress(p);
     if (p.stage === 'started' || (p.progress > 0 && p.progress < 100)) {
+      setProcessingStarted(true);
       setStep(1);
     }
   }, []);
 
   const handleExtract = useCallback((data) => {
     setJdData(data);
-    setStep(2);
     setProgress(null);
     setError(null);
-    if (onJDExtracted) onJDExtracted(data);
-  }, [onJDExtracted]);
+
+    // If processing was started, show step 1 briefly before moving to step 2
+    if (processingStarted) {
+      setStep(1);
+      setTimeout(() => setStep(2), 800);
+    } else {
+      setStep(2);
+    }
+  }, [processingStarted]);
 
   const handleError = useCallback((err) => {
     setError(err.message || 'Extraction failed. Please try again.');
@@ -364,6 +376,7 @@ export const JDSearchModal = ({ isOpen, onClose, onJDExtracted }) => {
     setJdData(null);
     setProgress(null);
     setError(null);
+    setProcessingStarted(false);
   };
 
   if (!isOpen) return null;
@@ -534,7 +547,11 @@ export const JDSearchModal = ({ isOpen, onClose, onJDExtracted }) => {
                 </div>
 
                 <button
-                  onClick={handleClose}
+                  onClick={() => {
+                    if (onJDExtracted) onJDExtracted(jdData);
+                    handleClose();
+                    navigate('/results', { state: { jd: jdData } });
+                  }}
                   className={cn(
                     components.button.base,
                     components.button.variants.primary,

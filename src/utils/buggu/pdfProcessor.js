@@ -70,9 +70,9 @@ async function convertPdfToImages(pdfFile) {
   const arrayBuffer = await pdfFile.arrayBuffer();
   
   // Load PDF document
-  const loadingTask = pdfjsLib.getDocument({
+  const loadingTask = pdfjsLib.getDocument({ 
     data: arrayBuffer,
-    // Enable font loading for better rendering quality
+    // Disable font loading to speed up rendering
     disableFontFace: false,
     // Enable text content for better extraction quality
     enableXfa: true
