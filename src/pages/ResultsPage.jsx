@@ -309,12 +309,12 @@ const CandidateCard = ({ result, index, onViewChat, outreachProgress, outreachSt
 
         <button
           onClick={() => onViewChat(candidate.candidate_id)}
-          disabled={outreachState !== 'done' || outreachProgress?.[candidate.candidate_id] === 'running'}
+          disabled={outreachState === 'idle' || outreachProgress?.[candidate.candidate_id] === 'running'}
           className={cn(
             components.button.base,
             components.button.variants.primary,
             'text-sm px-5 h-9 min-h-0 rounded-xl gap-1.5',
-            (outreachState !== 'done' || outreachProgress?.[candidate.candidate_id] === 'running') && 'opacity-50 cursor-not-allowed'
+            (outreachState === 'idle' || outreachProgress?.[candidate.candidate_id] === 'running') && 'opacity-50 cursor-not-allowed'
           )}
         >
           {outreachProgress?.[candidate.candidate_id] === 'running' ? (
