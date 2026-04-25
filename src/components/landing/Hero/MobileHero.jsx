@@ -1,9 +1,17 @@
-import React from 'react';
-import { cn } from '../../../utils/designTokens';
 import { FloatingCard } from './FloatingCard';
 import { SocialProof } from '../SocialProof/SocialProof';
 import { TrustIndicators } from '../SocialProof/TrustIndicators';
 import { AuthButtons } from '../Action/ActionButtons';
+
+/**
+ * MobileHero - Mobile-specific hero section component.
+ * Displays the main landing page content in a centered, single-column layout optimized for mobile devices.
+ * Includes headline, description, hero image with floating cards, social proof, and action buttons.
+ *
+ * @param {Object} props - Component props
+ * @param {Function} props.onOpenJDModal - Callback function to open the JD parsing modal
+ * @returns {JSX.Element} Rendered mobile hero section
+ */
 export const MobileHero = ({ onOpenJDModal }) => {
     return (
         <section className="lg:hidden pt-8 sm:pt-12">

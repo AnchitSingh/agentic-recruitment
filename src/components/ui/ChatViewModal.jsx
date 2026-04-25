@@ -4,18 +4,30 @@ import { cn, components } from '../../utils/designTokens';
 
 // ─── Icons ─────────────────────────────────────────────────────────────────────
 
+/**
+ * CloseIcon - X icon for closing modals or dialogs.
+ * @returns {JSX.Element} Rendered close icon
+ */
 const CloseIcon = () => (
   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
   </svg>
 );
 
+/**
+ * RecruiterIcon - User icon representing a recruiter.
+ * @returns {JSX.Element} Rendered recruiter icon
+ */
 const RecruiterIcon = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
   </svg>
 );
 
+/**
+ * CandidateIcon - User icon representing a candidate.
+ * @returns {JSX.Element} Rendered candidate icon
+ */
 const CandidateIcon = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -24,6 +36,16 @@ const CandidateIcon = () => (
 
 // ─── Message Bubble ─────────────────────────────────────────────────────────────
 
+/**
+ * MessageBubble - Individual message bubble in the chat transcript.
+ * Displays messages from either recruiter or candidate with appropriate styling.
+ *
+ * @param {Object} props - Component props
+ * @param {string} props.role - Message role: 'recruiter' | 'candidate'
+ * @param {string} props.content - Message text content
+ * @param {number} props.turn - Turn number in the conversation
+ * @returns {JSX.Element} Rendered message bubble
+ */
 const MessageBubble = ({ role, content, turn }) => {
   const isRecruiter = role === 'recruiter';
 
@@ -62,6 +84,24 @@ const MessageBubble = ({ role, content, turn }) => {
 
 // ─── Chat View Modal ───────────────────────────────────────────────────────────
 
+/**
+ * ChatViewModal - Modal for viewing candidate conversation transcripts.
+ * Displays chat history, interest score, summary, blockers, and positive signals.
+ * Features copy-to-clipboard functionality and proper accessibility.
+ *
+ * @param {Object} props - Component props
+ * @param {boolean} props.isOpen - Whether the modal is currently open
+ * @param {Function} props.onClose - Callback function to close the modal
+ * @param {Object} props.conversationData - Conversation data object containing:
+ *   - candidate_name: string
+ *   - transcript: Array of message objects with role, content, turn
+ *   - interest_score: number (0-100)
+ *   - interest_level: string
+ *   - summary: string
+ *   - blockers: Array of strings
+ *   - positive_signals: Array of strings
+ * @returns {JSX.Element|null} Rendered modal or null if closed
+ */
 export const ChatViewModal = ({ isOpen, onClose, conversationData }) => {
   const [copied, setCopied] = useState(false);
 

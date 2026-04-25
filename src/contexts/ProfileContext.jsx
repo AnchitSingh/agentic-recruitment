@@ -14,8 +14,8 @@ const actionTypes = {
 // Initial state
 const initialState = {
   profile: {
-    name: 'Study Enthusiast', // Default name
-    email: 'exam.buddy@no_email.com',
+    name: 'Agentic Recruiter', // Default name
+    email: 'agentic.recruiter@no_email.com',
     createdAt: null,
     lastLogin: new Date().toISOString(),
   },
@@ -92,8 +92,8 @@ export const ProfileProvider = ({ children }) => {
         } else {
           // Use default profile if none exists
           const defaultProfile = {
-            name: 'Study Enthusiast',
-            email: 'exam.buddy@gmail.com',
+            name: 'Agentic Recruiter',
+            email: 'agentic.recruiter@no_email.com',
             createdAt: new Date().toISOString(),
             lastLogin: new Date().toISOString(),
           };

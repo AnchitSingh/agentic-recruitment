@@ -1,7 +1,16 @@
-import React from 'react';
 import { cn } from '../../../utils/designTokens';
 
+/**
+ * ParseJDButton - Primary call-to-action button for starting the agentic job search.
+ * Features a gradient background, shimmer animation, and hover effects.
+ *
+ * @param {Object} props - Component props
+ * @param {boolean} [props.isMobile=false] - Whether to apply mobile-specific styling (currently unused but available for future responsive behavior)
+ * @param {Function} props.onClick - Callback function triggered when button is clicked
+ * @returns {JSX.Element} Rendered button component
+ */
 export const ParseJDButton = ({ isMobile = false, onClick }) => {
+    // Handle button click and trigger the provided callback
     const handleJDClick = () => {
         if (onClick) {
             onClick();

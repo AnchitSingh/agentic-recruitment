@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { cn, components } from '../../utils/designTokens';
@@ -6,12 +6,20 @@ import { DocumentExtractor } from '../buggu/DocumentExtractor';
 
 // ─── Icons ─────────────────────────────────────────────────────────────────────
 
+/**
+ * CloseIcon - X icon for closing modals.
+ * @returns {JSX.Element} Rendered close icon
+ */
 const CloseIcon = () => (
   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
   </svg>
 );
 
+/**
+ * SparklesIcon - Sparkle icon for AI-powered features.
+ * @returns {JSX.Element} Rendered sparkles icon
+ */
 const SparklesIcon = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
@@ -19,6 +27,10 @@ const SparklesIcon = () => (
   </svg>
 );
 
+/**
+ * BriefcaseIcon - Briefcase icon for job-related content.
+ * @returns {JSX.Element} Rendered briefcase icon
+ */
 const BriefcaseIcon = () => (
   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
@@ -26,6 +38,10 @@ const BriefcaseIcon = () => (
   </svg>
 );
 
+/**
+ * ClockIcon - Clock icon for time-related content.
+ * @returns {JSX.Element} Rendered clock icon
+ */
 const ClockIcon = () => (
   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
@@ -33,6 +49,10 @@ const ClockIcon = () => (
   </svg>
 );
 
+/**
+ * CheckIcon - Checkmark icon for completion status.
+ * @returns {JSX.Element} Rendered check icon
+ */
 const CheckIcon = () => (
   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 13.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -46,6 +66,10 @@ const AlertIcon = () => (
   </svg>
 );
 
+/**
+ * SearchIcon - Search magnifying glass icon.
+ * @returns {JSX.Element} Rendered search icon
+ */
 const SearchIcon = () => (
   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
@@ -57,6 +81,14 @@ const SearchIcon = () => (
 
 const STEPS = ['Add JD', 'Analyzing', 'Review'];
 
+/**
+ * StepIndicator - Visual progress indicator showing current step in the JD parsing flow.
+ * Displays three steps: Add JD, Analyzing, Review.
+ *
+ * @param {Object} props - Component props
+ * @param {number} props.current - Current step index (0-2)
+ * @returns {JSX.Element} Rendered step indicator
+ */
 const StepIndicator = ({ current }) => (
   <div className="flex items-center gap-0">
     {STEPS.map((label, i) => {
@@ -102,6 +134,17 @@ const StepIndicator = ({ current }) => (
 
 // ─── Step 2: Processing ─────────────────────────────────────────────────────────
 
+/**
+ * ProcessingStep - Animated processing state during JD analysis.
+ * Shows progress bar, animated icon, and stage checklist.
+ *
+ * @param {Object} props - Component props
+ * @param {Object} [props.progress] - Progress object containing:
+ *   - progress: number (0-100)
+ *   - message: string
+ *   - stage: string
+ * @returns {JSX.Element} Rendered processing step
+ */
 const ProcessingStep = ({ progress }) => {
   const pct = progress?.progress ?? 0;
   const msg = progress?.message  ?? 'Analyzing job description…';
@@ -183,6 +226,20 @@ const ProcessingStep = ({ progress }) => {
 
 // ─── Step 3: Review ─────────────────────────────────────────────────────────────
 
+/**
+ * ReviewStep - Displays extracted JD data for user review before searching.
+ * Shows role, experience, skills (must-have and nice-to-have), and domains.
+ *
+ * @param {Object} props - Component props
+ * @param {Object} props.jdData - Extracted job description data containing:
+ *   - skills: { must_have: Array, nice_to_have: Array }
+ *   - domain: Array of strings
+ *   - experience: { min_years: number, max_years: number }
+ *   - raw_title: string
+ *   - role: { title: string }
+ * @param {Function} props.onReset - Callback to reset to step 0
+ * @returns {JSX.Element} Rendered review step
+ */
 const ReviewStep = ({ jdData, onReset }) => {
   const mustHave    = jdData?.skills?.must_have    || [];
   const niceToHave  = jdData?.skills?.nice_to_have || [];
@@ -298,6 +355,17 @@ const ReviewStep = ({ jdData, onReset }) => {
 
 // ─── Main Modal ─────────────────────────────────────────────────────────────────
 
+/**
+ * JDSearchModal - Multi-step modal for parsing and reviewing job descriptions.
+ * Flow: Input JD → Processing animation → Review extracted data → Search candidates.
+ * Integrates with DocumentExtractor for file/text parsing.
+ *
+ * @param {Object} props - Component props
+ * @param {boolean} props.isOpen - Whether the modal is currently open
+ * @param {Function} props.onClose - Callback function to close the modal
+ * @param {Function} props.onJDExtracted - Callback when JD is successfully extracted, receives jdData
+ * @returns {JSX.Element|null} Rendered modal or null if closed
+ */
 export const JDSearchModal = ({ isOpen, onClose, onJDExtracted }) => {
   const navigate = useNavigate();
   const [step, setStep]             = useState(0);   // 0 input | 1 processing | 2 review

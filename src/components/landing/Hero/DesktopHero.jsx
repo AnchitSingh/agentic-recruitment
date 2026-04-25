@@ -1,10 +1,18 @@
-import React from 'react';
-import { cn } from '../../../utils/designTokens';
 import { FloatingCard } from './FloatingCard';
 import { SocialProof } from '../SocialProof/SocialProof';
 import { TrustIndicators } from '../SocialProof/TrustIndicators';
 import { AuthButtons } from '../Action/ActionButtons';
 
+/**
+ * DesktopHero - Desktop-specific hero section component.
+ * Displays the main landing page content with a two-column layout:
+ * - Left column: Headline, description, social proof, and action buttons
+ * - Right column: Hero image with floating informational cards
+ *
+ * @param {Object} props - Component props
+ * @param {Function} props.onOpenJDModal - Callback function to open the JD parsing modal
+ * @returns {JSX.Element} Rendered desktop hero section
+ */
 export const DesktopHero = ({ onOpenJDModal }) => {
     return (
         <section className="hidden lg:block">
