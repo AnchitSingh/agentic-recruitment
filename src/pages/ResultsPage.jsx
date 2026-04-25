@@ -97,9 +97,13 @@ const StatBar = ({ label, value }) => (
 
 // ─── Candidate Card ─────────────────────────────────────────────────────────────
 
-const CandidateCard = ({ result, index, onViewChat, outreachProgress }) => {
+const CandidateCard = ({ result, index, onViewChat, outreachProgress, showCombinedScores }) => {
   const [expanded, setExpanded] = useState(false);
-  const { candidate, matchScore, scoreBreakdown, explanation } = result;
+  const { candidate, matchScore, scoreBreakdown, explanation, interestScore, combinedScore, interestLevel, matchExplanation, matchBreakdown } = result;
+
+  // Use match properties when available (from finalShortlist), otherwise use original
+  const displayExplanation = matchExplanation || explanation;
+  const displayScoreBreakdown = matchBreakdown || scoreBreakdown;
 
   const initials = (candidate.personal?.name || 'U')
     .split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
@@ -129,7 +133,15 @@ const CandidateCard = ({ result, index, onViewChat, outreachProgress }) => {
             </p>
           </div>
 
-          <ScoreArc score={matchScore} />
+          <div className="flex items-center gap-3">
+            {showCombinedScores && (
+              <div className="text-right">
+                <div className="text-[10px] text-slate-400 font-medium">Combined</div>
+                <div className="text-sm font-bold text-amber-600">{combinedScore?.toFixed(1) || 'N/A'}</div>
+              </div>
+            )}
+            <ScoreArc score={matchScore} />
+          </div>
         </div>
 
         {/* Meta chips */}
@@ -153,12 +165,27 @@ const CandidateCard = ({ result, index, onViewChat, outreachProgress }) => {
             ₹{candidate.compensation?.expected_lpa || 'N/A'} LPA
           </span>
 
-          {explanation?.availability_note && (
+          {showCombinedScores && interestLevel && (
+            <span className={cn(
+              'inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full ring-1',
+              interestLevel === 'high' ? 'bg-green-50 text-green-700 ring-green-200/60' :
+              interestLevel === 'medium' ? 'bg-amber-50 text-amber-700 ring-amber-200/60' :
+              interestLevel === 'low' ? 'bg-orange-50 text-orange-600 ring-orange-200/60' :
+              'bg-slate-50 text-slate-600 ring-slate-200/60'
+            )}>
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              Interest: {interestLevel}
+            </span>
+          )}
+
+          {displayExplanation?.availability_note && (
             <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full ring-1 ring-amber-200/60">
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {explanation.availability_note.split('·')[0].trim()}
+              {displayExplanation.availability_note.split('·')[0].trim()}
             </span>
           )}
         </div>
@@ -169,9 +196,9 @@ const CandidateCard = ({ result, index, onViewChat, outreachProgress }) => {
 
       {/* ── Tags + skills + summary ────────────────────────────────── */}
       <div className="px-6 py-4 flex-1">
-        {explanation?.strength_tags?.length > 0 && (
+        {displayExplanation?.strength_tags?.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-3">
-            {explanation.strength_tags.map((tag, i) => (
+            {displayExplanation.strength_tags.map((tag, i) => (
               <span key={i} className={cn('text-xs font-semibold px-2.5 py-0.5 rounded-full', tagVariants[tag.color] || tagVariants.blue)}>
                 {tag.label}
               </span>
@@ -180,26 +207,26 @@ const CandidateCard = ({ result, index, onViewChat, outreachProgress }) => {
         )}
 
         <div className="flex flex-wrap gap-1.5">
-          {explanation?.must_have_matched?.map((s, i) => (
+          {displayExplanation?.must_have_matched?.map((s, i) => (
             <span key={`m${i}`} className="inline-flex items-center gap-1 text-xs font-medium bg-green-50 text-green-700 px-2.5 py-0.5 rounded-full ring-1 ring-green-200/60">
               <CheckIcon />{s}
             </span>
           ))}
-          {explanation?.must_have_missing?.map((s, i) => (
+          {displayExplanation?.must_have_missing?.map((s, i) => (
             <span key={`x${i}`} className="inline-flex items-center gap-1 text-xs font-medium bg-red-50 text-red-600 px-2.5 py-0.5 rounded-full ring-1 ring-red-200/60">
               <XIcon />{s}
             </span>
           ))}
-          {explanation?.nice_to_have_matched?.map((s, i) => (
+          {displayExplanation?.nice_to_have_matched?.map((s, i) => (
             <span key={`n${i}`} className="inline-flex items-center gap-1 text-xs font-medium bg-amber-50 text-amber-700 px-2.5 py-0.5 rounded-full ring-1 ring-amber-200/60">
               +{s}
             </span>
           ))}
         </div>
 
-        {explanation?.summary && (
+        {displayExplanation?.summary && (
           <p className="mt-3 text-sm text-slate-500 leading-relaxed line-clamp-2">
-            {explanation.summary}
+            {displayExplanation.summary}
           </p>
         )}
       </div>
@@ -246,16 +273,33 @@ const CandidateCard = ({ result, index, onViewChat, outreachProgress }) => {
       {/* ── Expandable score breakdown ────────────────────────────── */}
       <div
         className="overflow-hidden transition-all duration-300 ease-in-out"
-        style={{ maxHeight: expanded ? '240px' : '0' }}
+        style={{ maxHeight: expanded ? '280px' : '0' }}
       >
         <div className="px-6 pb-5 pt-3 border-t border-slate-50 space-y-2.5">
-          <StatBar label="Semantic match" value={scoreBreakdown?.vector_similarity   ?? 0} />
-          <StatBar label="Experience"     value={scoreBreakdown?.experience_score    ?? 0} />
-          <StatBar label="Location fit"   value={scoreBreakdown?.location_score      ?? 0} />
-          <StatBar label="Salary fit"     value={scoreBreakdown?.salary_score        ?? 0} />
-          <StatBar label="Availability"   value={scoreBreakdown?.availability_score  ?? 0} />
-          {explanation?.experience_note && (
-            <p className="text-xs text-slate-400 pt-1">{explanation.experience_note}</p>
+          {showCombinedScores ? (
+            <>
+              <div className="flex items-center justify-between py-1">
+                <span className="text-xs font-semibold text-slate-700">Combined Score</span>
+                <span className="text-xs font-bold text-amber-600">{combinedScore?.toFixed(1) || 'N/A'}</span>
+              </div>
+              <div className="flex items-center justify-between py-1">
+                <span className="text-xs text-slate-500">Match (60%)</span>
+                <span className="text-xs font-medium text-slate-600">{matchScore?.toFixed(1) || 'N/A'}</span>
+              </div>
+              <div className="flex items-center justify-between py-1">
+                <span className="text-xs text-slate-500">Interest (40%)</span>
+                <span className="text-xs font-medium text-slate-600">{interestScore || 'N/A'}</span>
+              </div>
+              <div className="h-px bg-slate-100 my-2" />
+            </>
+          ) : null}
+          <StatBar label="Semantic match" value={displayScoreBreakdown?.vector_similarity   ?? 0} />
+          <StatBar label="Experience"     value={displayScoreBreakdown?.experience_score    ?? 0} />
+          <StatBar label="Location fit"   value={displayScoreBreakdown?.location_score      ?? 0} />
+          <StatBar label="Salary fit"     value={displayScoreBreakdown?.salary_score        ?? 0} />
+          <StatBar label="Availability"   value={displayScoreBreakdown?.availability_score  ?? 0} />
+          {displayExplanation?.experience_note && (
+            <p className="text-xs text-slate-400 pt-1">{displayExplanation.experience_note}</p>
           )}
         </div>
       </div>
@@ -327,7 +371,7 @@ const ResultsPage = () => {
             jdWithEmbedding,
             jdVector,
             candidatesDb,
-            10
+            6
           );
           setLocalJd(jdWithEmbedding);
           setLocalCandidates(rankedCandidates);
@@ -341,7 +385,7 @@ const ResultsPage = () => {
     runMatching();
   }, [jd, candidates]);
 
-  // Initiate agentic negotiations (limited to top 2 for development)
+  // Initiate agentic negotiations for all 6 candidates
   const handleInitiateOutreach = async () => {
     setOutreachState('running');
     setOutreachProgress({});
@@ -349,8 +393,8 @@ const ResultsPage = () => {
     try {
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
-      // Limit to top 2 candidates for development
-      const topCandidates = localCandidates.slice(0, 2);
+      // Run conversations with all 6 candidates
+      const topCandidates = localCandidates.slice(0, 6);
 
       const onProgress = (candidateId, status) => {
         setOutreachProgress(prev => ({ ...prev, [candidateId]: status }));
@@ -536,7 +580,7 @@ const ResultsPage = () => {
               <svg className="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
               </svg>
-              Ranked by match
+              Ranked by {outreachState === 'done' ? 'combined score' : 'match'}
             </span>
 
             <span className="inline-flex items-center justify-center bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm shadow-amber-500/25">
@@ -550,13 +594,14 @@ const ResultsPage = () => {
       {/* ── Card grid ──────────────────────────────────────────────── */}
       <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 pt-28 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {localCandidates.map((result, index) => (
+          {(finalShortlist || localCandidates).map((result, index) => (
             <CandidateCard
               key={result.candidate?.candidate_id || index}
               result={result}
               index={index}
               onViewChat={setSelectedChat}
               outreachProgress={outreachProgress}
+              showCombinedScores={outreachState === 'done'}
             />
           ))}
         </div>
