@@ -1,4 +1,4 @@
-# Exam Buddy robots.txt
+# Agentic-Recruitment robots.txt
 
 User-agent: *
 Allow: /

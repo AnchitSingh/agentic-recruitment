@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { cn, components, backgrounds } from '../utils/designTokens';
 import { generateJDEmbedding } from '../utils/embeddingGenerator';
@@ -40,24 +40,24 @@ const XIcon = () => (
 
 const scoreConfig = (score) => {
   if (score >= 85) return { ring: '#22c55e', text: 'text-green-600', label: 'Excellent' };
-  if (score >= 70) return { ring: '#f59e0b', text: 'text-amber-600', label: 'Strong'    };
-  if (score >= 55) return { ring: '#f97316', text: 'text-orange-500', label: 'Good'     };
-  return             { ring: '#94a3b8', text: 'text-slate-400',   label: 'Fair'          };
+  if (score >= 70) return { ring: '#f59e0b', text: 'text-amber-600', label: 'Strong' };
+  if (score >= 55) return { ring: '#f97316', text: 'text-orange-500', label: 'Good' };
+  return { ring: '#94a3b8', text: 'text-slate-400', label: 'Fair' };
 };
 
 const tagVariants = {
-  green:  'bg-green-50  text-green-700  ring-1 ring-green-200/80',
-  blue:   'bg-blue-50   text-blue-700   ring-1 ring-blue-200/80',
+  green: 'bg-green-50  text-green-700  ring-1 ring-green-200/80',
+  blue: 'bg-blue-50   text-blue-700   ring-1 ring-blue-200/80',
   purple: 'bg-purple-50 text-purple-700 ring-1 ring-purple-200/80',
   yellow: 'bg-amber-50  text-amber-700  ring-1 ring-amber-200/80',
-  red:    'bg-red-50    text-red-600    ring-1 ring-red-200/80',
+  red: 'bg-red-50    text-red-600    ring-1 ring-red-200/80',
 };
 
 // ─── Arc Score Badge ────────────────────────────────────────────────────────────
 
 const ScoreArc = ({ score }) => {
-  const cfg  = scoreConfig(score);
-  const r    = 28;
+  const cfg = scoreConfig(score);
+  const r = 28;
   const circ = 2 * Math.PI * r;
   const fill = (score / 100) * circ * 0.75;
 
@@ -169,9 +169,9 @@ const CandidateCard = ({ result, index, onViewChat, outreachProgress, showCombin
             <span className={cn(
               'inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full ring-1',
               interestLevel === 'high' ? 'bg-green-50 text-green-700 ring-green-200/60' :
-              interestLevel === 'medium' ? 'bg-amber-50 text-amber-700 ring-amber-200/60' :
-              interestLevel === 'low' ? 'bg-orange-50 text-orange-600 ring-orange-200/60' :
-              'bg-slate-50 text-slate-600 ring-slate-200/60'
+                interestLevel === 'medium' ? 'bg-amber-50 text-amber-700 ring-amber-200/60' :
+                  interestLevel === 'low' ? 'bg-orange-50 text-orange-600 ring-orange-200/60' :
+                    'bg-slate-50 text-slate-600 ring-slate-200/60'
             )}>
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -293,11 +293,11 @@ const CandidateCard = ({ result, index, onViewChat, outreachProgress, showCombin
               <div className="h-px bg-slate-100 my-2" />
             </>
           ) : null}
-          <StatBar label="Semantic match" value={displayScoreBreakdown?.vector_similarity   ?? 0} />
-          <StatBar label="Experience"     value={displayScoreBreakdown?.experience_score    ?? 0} />
-          <StatBar label="Location fit"   value={displayScoreBreakdown?.location_score      ?? 0} />
-          <StatBar label="Salary fit"     value={displayScoreBreakdown?.salary_score        ?? 0} />
-          <StatBar label="Availability"   value={displayScoreBreakdown?.availability_score  ?? 0} />
+          <StatBar label="Semantic match" value={displayScoreBreakdown?.vector_similarity ?? 0} />
+          <StatBar label="Experience" value={displayScoreBreakdown?.experience_score ?? 0} />
+          <StatBar label="Location fit" value={displayScoreBreakdown?.location_score ?? 0} />
+          <StatBar label="Salary fit" value={displayScoreBreakdown?.salary_score ?? 0} />
+          <StatBar label="Availability" value={displayScoreBreakdown?.availability_score ?? 0} />
           {displayExplanation?.experience_note && (
             <p className="text-xs text-slate-400 pt-1">{displayExplanation.experience_note}</p>
           )}
@@ -346,8 +346,8 @@ const SkeletonCard = () => (
 // ─── Results Page ───────────────────────────────────────────────────────────────
 
 const ResultsPage = () => {
-  const navigate  = useNavigate();
-  const location  = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { jd, candidates } = location.state || { jd: null, candidates: [] };
   const [loading, setLoading] = useState(false);
   const [localCandidates, setLocalCandidates] = useState(candidates);

@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@google/genai": "^1.50.1",
-    "@supabase/supabase-js": "^2.97.0",
     "@tailwindcss/postcss": "^4.1.13",
     "@tailwindcss/vite": "^4.1.13",
     "clsx": "^2.1.1",

@@ -17,7 +17,7 @@ export async function generateEmbedding(text) {
 
   try {
     console.log('Generating embedding for text...');
-    
+
     // Call the Gemini embedding API
     const response = await ai.models.embedContent({
       model: 'gemini-embedding-2',
@@ -26,10 +26,10 @@ export async function generateEmbedding(text) {
 
     // Extract the vector from the response
     const vector = response.embeddings[0].values;
-    
+
     console.log('✅ Embedding generated successfully');
     return vector;
-    
+
   } catch (error) {
     console.error('❌ Failed to generate embedding:', error.message);
     throw error;
@@ -48,7 +48,7 @@ export async function generateJDEmbedding(jdData) {
 
   try {
     const vector = await generateEmbedding(jdData.meta.embedding_text);
-    
+
     // Add the embedding vector to the JD data
     const jdWithEmbedding = {
       ...jdData,
@@ -57,9 +57,9 @@ export async function generateJDEmbedding(jdData) {
         embedding_vector: vector
       }
     };
-    
+
     return jdWithEmbedding;
-    
+
   } catch (error) {
     console.error('❌ Failed to generate JD embedding:', error.message);
     throw error;

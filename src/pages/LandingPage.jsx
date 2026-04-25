@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { backgrounds, cn } from '../utils/designTokens';
 import JDSearchModal from '../components/ui/JDSearchModal';
 
@@ -10,17 +9,7 @@ import { HeroSection } from '../components/landing/Hero/HeroSection';
 
 
 const LandingPage = () => {
-    const navigate = useNavigate();
     const [showJDModal, setShowJDModal] = useState(false);
-
-    // Handle search result selection
-    const handleSearchResultSelect = (result) => {
-        // Quiz feature coming soon
-        console.log('Search result selected:', result);
-    };
-
-    // In your component:
-    const [matchLoading, setMatchLoading] = useState(false);
 
     const handleJDExtracted = async (jdData) => {
         console.log('JD extracted:', jdData);

@@ -21,30 +21,30 @@
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 
 // Recommended models (April 2026)
-const CHAT_MODEL  = 'gemini-3.1-flash-lite-preview';   // Fast, cost-effective for conversation turns
+const CHAT_MODEL = 'gemini-3.1-flash-lite-preview';   // Fast, cost-effective for conversation turns
 const JUDGE_MODEL = 'gemini-3.1-flash-lite-preview';     // Superior reasoning for interest scoring
 
-const MAX_TURNS         = 5;      // Hard cap — never let LLMs extend this
-const MAX_TOKENS_CHAT   = 700;    // Keep each message short — screening call
-const MAX_TOKENS_JUDGE  = 1000;    // Judge needs more room to reason
-const MAX_RETRIES       = 3;      // Retry attempts for transient errors / rate limits
+const MAX_TURNS = 5;      // Hard cap — never let LLMs extend this
+const MAX_TOKENS_CHAT = 700;    // Keep each message short — screening call
+const MAX_TOKENS_JUDGE = 1000;    // Judge needs more room to reason
+const MAX_RETRIES = 3;      // Retry attempts for transient errors / rate limits
 
 // ─── Availability label map ───────────────────────────────────────────────────
 const AVAILABILITY_LABELS = {
-  actively_looking:  'actively looking for new opportunities',
-  open_to_offers:    'open to the right opportunity',
+  actively_looking: 'actively looking for new opportunities',
+  open_to_offers: 'open to the right opportunity',
   passively_looking: 'currently employed but open to interesting roles',
-  not_looking:       'happily employed and not actively looking',
+  not_looking: 'happily employed and not actively looking',
 };
 
 const SENIORITY_LABELS = {
-  junior:      'a junior professional',
-  mid:         'a mid-level professional',
+  junior: 'a junior professional',
+  mid: 'a mid-level professional',
   'mid-senior': 'a mid-to-senior level professional',
-  senior:      'a senior professional',
-  lead:        'a technical lead',
-  principal:   'a principal engineer',
-  staff:       'a staff engineer',
+  senior: 'a senior professional',
+  lead: 'a technical lead',
+  principal: 'a principal engineer',
+  staff: 'a staff engineer',
 };
 
 
@@ -92,17 +92,17 @@ export async function runSingleConversation(jd, candidate, apiKey) {
   const judgement = await _judgeTranscript(transcript, jd, candidate, apiKey);
 
   return {
-    candidate_id:   candidate.candidate_id,
+    candidate_id: candidate.candidate_id,
     candidate_name: candidate.personal?.name || 'Unknown',
     transcript,
     interest_score: judgement.interest_score,
     interest_level: judgement.interest_level,
-    blockers:       judgement.blockers,
-    enthusiasm:     judgement.enthusiasm,
-    salary_signal:  judgement.salary_signal,
+    blockers: judgement.blockers,
+    enthusiasm: judgement.enthusiasm,
+    salary_signal: judgement.salary_signal,
     availability_signal: judgement.availability_signal,
-    summary:        judgement.summary,
-    raw_judgement:  judgement,
+    summary: judgement.summary,
+    raw_judgement: judgement,
   };
 }
 
@@ -112,9 +112,9 @@ export async function runSingleConversation(jd, candidate, apiKey) {
 // ══════════════════════════════════════════════════════════════════════════════
 
 function _buildRecruiterSystemPrompt(jd) {
-  const mustHave    = jd.skills?.must_have?.map(s => s.name).join(', ')    || 'not specified';
-  const niceToHave  = jd.skills?.nice_to_have?.map(s => s.name).join(', ') || 'none';
-  const domain      = jd.skills?.domain_knowledge?.map(d => d.name).join(', ') || 'general';
+  const mustHave = jd.skills?.must_have?.map(s => s.name).join(', ') || 'not specified';
+  const niceToHave = jd.skills?.nice_to_have?.map(s => s.name).join(', ') || 'none';
+  const domain = jd.skills?.domain_knowledge?.map(d => d.name).join(', ') || 'general';
   const salaryRange = jd.compensation?.disclosed
     ? `${jd.compensation.min_lpa}–${jd.compensation.max_lpa} ${jd.compensation.currency || 'LPA'}`
     : 'competitive, discussed based on experience';
@@ -158,11 +158,11 @@ STRICT RULES:
 // ══════════════════════════════════════════════════════════════════════════════
 
 function _buildCandidateSystemPrompt(candidate, jd) {
-  const name         = candidate.personal?.name || 'the candidate';
+  const name = candidate.personal?.name || 'the candidate';
   const currentTitle = candidate.role?.current_title || 'Software Engineer';
-  const currentCo    = candidate.experience?.current_company || 'their current company';
-  const totalYears   = candidate.experience?.total_years ?? 3;
-  const seniority    = SENIORITY_LABELS[candidate.role?.seniority] || 'an experienced professional';
+  const currentCo = candidate.experience?.current_company || 'their current company';
+  const totalYears = candidate.experience?.total_years ?? 3;
+  const seniority = SENIORITY_LABELS[candidate.role?.seniority] || 'an experienced professional';
 
   const primarySkills = candidate.skills?.primary
     ?.map(s => `${s.name} (${s.years || '?'} yrs)`)
@@ -176,22 +176,22 @@ function _buildCandidateSystemPrompt(candidate, jd) {
     ?.map(d => `${d.name} (${d.strength || 'moderate'})`)
     .join(', ') || 'general software';
 
-  const availability    = AVAILABILITY_LABELS[candidate.availability?.status] || 'open to opportunities';
-  const noticePeriod    = candidate.availability?.notice_period_days
+  const availability = AVAILABILITY_LABELS[candidate.availability?.status] || 'open to opportunities';
+  const noticePeriod = candidate.availability?.notice_period_days
     ? `${candidate.availability.notice_period_days} days`
     : 'standard notice';
-  const currentSalary   = candidate.compensation?.current_lpa
+  const currentSalary = candidate.compensation?.current_lpa
     ? `${candidate.compensation.current_lpa} ${candidate.compensation.currency || 'LPA'}`
     : 'not disclosed';
-  const expectedSalary  = candidate.compensation?.expected_lpa
+  const expectedSalary = candidate.compensation?.expected_lpa
     ? `${candidate.compensation.expected_lpa} ${candidate.compensation.currency || 'LPA'}`
     : 'open to discussion';
-  const negotiable      = candidate.compensation?.negotiable ? 'You are open to negotiation.' : 'Your expectation is firm.';
+  const negotiable = candidate.compensation?.negotiable ? 'You are open to negotiation.' : 'Your expectation is firm.';
 
-  const motivators     = candidate.persona?.motivators?.join(', ')    || 'technical challenges and growth';
-  const dealbreakers   = candidate.persona?.dealbreakers?.join(', ')  || 'micromanagement';
-  const commStyle      = candidate.persona?.communication_style       || 'professional and direct';
-  const personalityNote = candidate.persona?.personality_notes        || '';
+  const motivators = candidate.persona?.motivators?.join(', ') || 'technical challenges and growth';
+  const dealbreakers = candidate.persona?.dealbreakers?.join(', ') || 'micromanagement';
+  const commStyle = candidate.persona?.communication_style || 'professional and direct';
+  const personalityNote = candidate.persona?.personality_notes || '';
 
   const domainMatch = jd.skills?.domain_knowledge?.some(d =>
     candidate.skills?.domain_knowledge?.some(cd =>
@@ -264,7 +264,7 @@ async function _runConversationLoop(recruiterSystemPrompt, candidateSystemPrompt
     transcript.push({ role: 'recruiter', content: recruiterMsg, turn });
 
     recruiterHistory.push({ role: 'assistant', content: recruiterMsg });
-    candidateHistory.push({ role: 'user',      content: recruiterMsg });
+    candidateHistory.push({ role: 'user', content: recruiterMsg });
 
     // ── Candidate replies ─────────────────────────────────────────────────────
     const candidateReply = await _callLLM(
@@ -275,7 +275,7 @@ async function _runConversationLoop(recruiterSystemPrompt, candidateSystemPrompt
 
     transcript.push({ role: 'candidate', content: candidateReply, turn });
 
-    recruiterHistory.push({ role: 'user',      content: candidateReply });
+    recruiterHistory.push({ role: 'user', content: candidateReply });
     candidateHistory.push({ role: 'assistant', content: candidateReply });
   }
 
@@ -341,14 +341,14 @@ function _parseJudgeResponse(responseText, candidate) {
     const parsed = JSON.parse(cleaned);
 
     return {
-      interest_score:      typeof parsed.interest_score === 'number' ? parsed.interest_score : 50,
-      interest_level:      parsed.interest_level      || 'medium',
-      enthusiasm:          parsed.enthusiasm           || 'neutral',
-      salary_signal:       parsed.salary_signal        || 'unknown',
-      availability_signal: parsed.availability_signal  || 'unknown',
-      blockers:            Array.isArray(parsed.blockers)         ? parsed.blockers         : [],
-      positive_signals:    Array.isArray(parsed.positive_signals) ? parsed.positive_signals : [],
-      summary:             parsed.summary              || 'Unable to assess interest from conversation.',
+      interest_score: typeof parsed.interest_score === 'number' ? parsed.interest_score : 50,
+      interest_level: parsed.interest_level || 'medium',
+      enthusiasm: parsed.enthusiasm || 'neutral',
+      salary_signal: parsed.salary_signal || 'unknown',
+      availability_signal: parsed.availability_signal || 'unknown',
+      blockers: Array.isArray(parsed.blockers) ? parsed.blockers : [],
+      positive_signals: Array.isArray(parsed.positive_signals) ? parsed.positive_signals : [],
+      summary: parsed.summary || 'Unable to assess interest from conversation.',
     };
 
   } catch (err) {
@@ -398,8 +398,8 @@ async function _callLLM(apiKey, systemPrompt, messages, firstMessage = null, isJ
       candidateCount: 1,
     },
     safetySettings: [
-      { category: "HARM_CATEGORY_HARASSMENT",        threshold: "BLOCK_MEDIUM_AND_ABOVE" },
-      { category: "HARM_CATEGORY_HATE_SPEECH",       threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+      { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+      { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
       { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
       { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" }
     ]
@@ -486,33 +486,33 @@ function _describeLocation(location) {
 
 function _neutralJudgement(candidate) {
   return {
-    interest_score:      50,
-    interest_level:      'medium',
-    enthusiasm:          'neutral',
-    salary_signal:       'unknown',
+    interest_score: 50,
+    interest_level: 'medium',
+    enthusiasm: 'neutral',
+    salary_signal: 'unknown',
     availability_signal: 'unknown',
-    blockers:            [],
-    positive_signals:    [],
-    summary:             `Could not fully assess ${candidate.personal?.name || "the candidate"}'s interest from this conversation. Manual follow-up recommended.`,
+    blockers: [],
+    positive_signals: [],
+    summary: `Could not fully assess ${candidate.personal?.name || "the candidate"}'s interest from this conversation. Manual follow-up recommended.`,
   };
 }
 
 function _buildFallbackResult(candidate, matchScore, errorMessage) {
   return {
-    candidate_id:        candidate.candidate_id,
-    candidate_name:      candidate.personal?.name || 'Unknown',
+    candidate_id: candidate.candidate_id,
+    candidate_name: candidate.personal?.name || 'Unknown',
     matchScore,
-    transcript:          [],
-    interest_score:      0,
-    interest_level:      'unknown',
-    enthusiasm:          'unknown',
-    salary_signal:       'unknown',
+    transcript: [],
+    interest_score: 0,
+    interest_level: 'unknown',
+    enthusiasm: 'unknown',
+    salary_signal: 'unknown',
     availability_signal: 'unknown',
-    blockers:            [`Conversation failed: ${errorMessage}`],
-    positive_signals:    [],
-    summary:             'Conversation could not be completed due to an API error.',
-    raw_judgement:       null,
-    error:               errorMessage,
+    blockers: [`Conversation failed: ${errorMessage}`],
+    positive_signals: [],
+    summary: 'Conversation could not be completed due to an API error.',
+    raw_judgement: null,
+    error: errorMessage,
   };
 }
 
@@ -537,22 +537,22 @@ export function buildFinalShortlist(matchResults, conversationResults) {
     const combinedScore = computeCombinedScore(matchResult.matchScore, interestScore);
 
     return {
-      candidate:    matchResult.candidate,
-      matchScore:    matchResult.matchScore,
+      candidate: matchResult.candidate,
+      matchScore: matchResult.matchScore,
       interestScore,
       combinedScore,
       matchExplanation: matchResult.explanation,
-      matchBreakdown:   matchResult.scoreBreakdown,
-      interestLevel:       conv?.interest_level       || 'unknown',
-      enthusiasm:          conv?.enthusiasm            || 'unknown',
-      salarySignal:        conv?.salary_signal         || 'unknown',
-      availabilitySignal:  conv?.availability_signal   || 'unknown',
-      blockers:            conv?.blockers              || [],
-      positiveSignals:     conv?.positive_signals      || [],
-      interestSummary:     conv?.summary               || '',
-      transcript:          conv?.transcript            || [],
-      strengthTags:        matchResult.explanation?.strength_tags || [],
-      hasError:            !!conv?.error,
+      matchBreakdown: matchResult.scoreBreakdown,
+      interestLevel: conv?.interest_level || 'unknown',
+      enthusiasm: conv?.enthusiasm || 'unknown',
+      salarySignal: conv?.salary_signal || 'unknown',
+      availabilitySignal: conv?.availability_signal || 'unknown',
+      blockers: conv?.blockers || [],
+      positiveSignals: conv?.positive_signals || [],
+      interestSummary: conv?.summary || '',
+      transcript: conv?.transcript || [],
+      strengthTags: matchResult.explanation?.strength_tags || [],
+      hasError: !!conv?.error,
     };
   });
 
