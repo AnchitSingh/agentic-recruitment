@@ -1,687 +1,557 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { cn } from '../../utils/designTokens';
+import { cn, components } from '../../utils/designTokens';
 import { DocumentExtractor } from '../buggu/DocumentExtractor';
 
-// Icons
-const CloseIcon = ({ className = 'w-5 h-5' }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-    </svg>
+// ─── Icons ─────────────────────────────────────────────────────────────────────
+
+const CloseIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+  </svg>
 );
 
-const UploadIcon = ({ className = 'w-6 h-6' }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-    </svg>
+const SparklesIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+  </svg>
 );
 
-const SearchIcon = ({ className = 'w-5 h-5' }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-              d="M13 10V3L4 14h7v7l9-11h-7z" />
-    </svg>
+const BriefcaseIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+      d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+  </svg>
 );
 
-const SparklesIcon = ({ className = 'w-5 h-5' }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-              d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-    </svg>
+const ClockIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
 );
 
-const CheckCircleIcon = ({ className = 'w-5 h-5' }) => (
-    <svg className={className} fill="currentColor" viewBox="0 0 20 20">
-        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-    </svg>
+const CheckIcon = () => (
+  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 13.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+  </svg>
 );
 
-const ExclamationIcon = ({ className = 'w-6 h-6' }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-    </svg>
+const AlertIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+  </svg>
 );
 
-const BriefcaseIcon = ({ className = 'w-5 h-5' }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-              d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-    </svg>
+const SearchIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+  </svg>
 );
 
-const ClockIcon = ({ className = 'w-5 h-5' }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
+// ─── Step Indicator ─────────────────────────────────────────────────────────────
+
+const STEPS = ['Add JD', 'Analyzing', 'Review'];
+
+const StepIndicator = ({ current }) => (
+  <div className="flex items-center gap-0">
+    {STEPS.map((label, i) => {
+      const done    = i < current;
+      const active  = i === current;
+      const isLast  = i === STEPS.length - 1;
+      return (
+        <React.Fragment key={i}>
+          <div className="flex flex-col items-center gap-1.5">
+            <div className={cn(
+              'w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300',
+              done   ? 'bg-gradient-to-br from-amber-400 to-orange-500 shadow-sm shadow-amber-400/40' :
+              active ? 'bg-gradient-to-br from-amber-500 to-orange-600 shadow-md shadow-amber-500/40 scale-110' :
+                       'bg-slate-100'
+            )}>
+              {done
+                ? <CheckIcon />
+                : <span className={cn('text-[11px] font-bold', active ? 'text-white' : 'text-slate-400')}>
+                    {i + 1}
+                  </span>
+              }
+              {done && <span className="text-white"><CheckIcon /></span>}
+            </div>
+            <span className={cn(
+              'text-[10px] font-semibold whitespace-nowrap transition-colors duration-200',
+              active ? 'text-amber-600' : done ? 'text-slate-500' : 'text-slate-300'
+            )}>
+              {label}
+            </span>
+          </div>
+
+          {!isLast && (
+            <div className={cn(
+              'h-px w-12 sm:w-16 mx-1 mb-5 transition-all duration-500',
+              done ? 'bg-gradient-to-r from-amber-400 to-orange-400' : 'bg-slate-200'
+            )} />
+          )}
+        </React.Fragment>
+      );
+    })}
+  </div>
 );
 
-const CodeIcon = ({ className = 'w-5 h-5' }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-              d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-    </svg>
-);
+// ─── Step 2: Processing ─────────────────────────────────────────────────────────
 
-/**
- * Enhanced JD Search Modal with improved UI/UX
- */
+const ProcessingStep = ({ progress }) => {
+  const pct = progress?.progress ?? 0;
+  const msg = progress?.message  ?? 'Analyzing job description…';
+
+  // Animated dots for the label
+  const [dots, setDots] = useState('');
+  useEffect(() => {
+    const id = setInterval(() => setDots(d => d.length >= 3 ? '' : d + '.'), 500);
+    return () => clearInterval(id);
+  }, []);
+
+  const stages = [
+    { label: 'Parsing document',   done: pct >= 30 },
+    { label: 'Extracting skills',  done: pct >= 60 },
+    { label: 'Structuring data',   done: pct >= 90 },
+  ];
+
+  return (
+    <div className="flex flex-col items-center justify-center py-8 px-6 gap-8">
+      {/* Animated icon */}
+      <div className="relative">
+        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-xl shadow-amber-500/30">
+          <SparklesIcon />
+          <span className="text-white absolute"><SparklesIcon /></span>
+        </div>
+        {/* Orbit ring */}
+        <div className="absolute inset-0 rounded-2xl border-2 border-amber-400/40 animate-ping" style={{ animationDuration: '2s' }} />
+      </div>
+
+      {/* Message */}
+      <div className="text-center">
+        <p className="text-base font-semibold text-slate-800">{msg}{dots}</p>
+        {progress?.stage && (
+          <span className="inline-block mt-1 text-xs text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full font-medium">
+            {progress.stage}
+          </span>
+        )}
+      </div>
+
+      {/* Progress bar */}
+      <div className="w-full space-y-2">
+        <div className="flex justify-between text-xs text-slate-400 font-medium">
+          <span>Progress</span>
+          <span className="tabular-nums font-semibold text-amber-600">{pct}%</span>
+        </div>
+        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 bg-[length:200%] animate-shimmer transition-all duration-500"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Mini stage checklist */}
+      <div className="w-full space-y-2">
+        {stages.map((s, i) => (
+          <div key={i} className={cn(
+            'flex items-center gap-2.5 text-sm transition-all duration-300',
+            s.done ? 'text-slate-700' : 'text-slate-400'
+          )}>
+            <div className={cn(
+              'w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300',
+              s.done
+                ? 'bg-green-100 text-green-600'
+                : 'bg-slate-100'
+            )}>
+              {s.done
+                ? <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 13.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                : <span className="w-1.5 h-1.5 bg-slate-300 rounded-full block" />
+              }
+            </div>
+            <span className={s.done ? 'font-medium' : ''}>{s.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ─── Step 3: Review ─────────────────────────────────────────────────────────────
+
+const ReviewStep = ({ jdData, onReset }) => {
+  const mustHave    = jdData?.skills?.must_have    || [];
+  const niceToHave  = jdData?.skills?.nice_to_have || [];
+  const domains     = jdData?.domain               || [];
+  const expMin      = jdData?.experience?.min_years;
+  const expMax      = jdData?.experience?.max_years;
+
+  const expLabel = expMin
+    ? (expMax ? `${expMin}–${expMax} yrs` : `${expMin}+ yrs`)
+    : 'Not specified';
+
+  return (
+    <div className="space-y-4 px-6 pb-2">
+      {/* Summary row */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-blue-50 rounded-xl p-3.5 border border-blue-100/80">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-6 h-6 rounded-lg bg-blue-100 flex items-center justify-center">
+              <BriefcaseIcon />
+            </div>
+            <span className="text-[10px] font-semibold text-blue-500 uppercase tracking-wider">Role</span>
+          </div>
+          <p className="text-sm font-semibold text-slate-900 truncate">
+            {jdData?.raw_title || jdData?.role?.title || 'Not specified'}
+          </p>
+        </div>
+
+        <div className="bg-purple-50 rounded-xl p-3.5 border border-purple-100/80">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-6 h-6 rounded-lg bg-purple-100 flex items-center justify-center">
+              <ClockIcon />
+            </div>
+            <span className="text-[10px] font-semibold text-purple-500 uppercase tracking-wider">Experience</span>
+          </div>
+          <p className="text-sm font-semibold text-slate-900">{expLabel}</p>
+        </div>
+      </div>
+
+      {/* Must-have skills */}
+      {mustHave.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold text-slate-500 mb-2 flex items-center gap-1.5">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500" />
+            Must-have skills
+            <span className="text-slate-300 font-normal">· {mustHave.length}</span>
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {mustHave.slice(0, 10).map((skill, i) => (
+              <span key={i} className="inline-flex items-center gap-1 text-xs font-medium bg-green-50 text-green-700 px-2.5 py-1 rounded-full ring-1 ring-green-200/70">
+                <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 13.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                {skill.name || skill}
+              </span>
+            ))}
+            {mustHave.length > 10 && (
+              <span className="text-xs font-medium text-slate-400 bg-slate-50 px-2.5 py-1 rounded-full ring-1 ring-slate-200/70">
+                +{mustHave.length - 10} more
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Nice-to-have */}
+      {niceToHave.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold text-slate-500 mb-2 flex items-center gap-1.5">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400" />
+            Nice-to-have
+            <span className="text-slate-300 font-normal">· {niceToHave.length}</span>
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {niceToHave.slice(0, 6).map((skill, i) => (
+              <span key={i} className="text-xs font-medium bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full ring-1 ring-amber-200/70">
+                {skill.name || skill}
+              </span>
+            ))}
+            {niceToHave.length > 6 && (
+              <span className="text-xs font-medium text-slate-400 bg-slate-50 px-2.5 py-1 rounded-full ring-1 ring-slate-200/70">
+                +{niceToHave.length - 6} more
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Domain tags */}
+      {domains.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold text-slate-500 mb-2 flex items-center gap-1.5">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-400" />
+            Domain
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {domains.map((d, i) => (
+              <span key={i} className="text-xs font-medium bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full ring-1 ring-blue-200/70">
+                {d}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Reset link */}
+      <button
+        onClick={onReset}
+        className="text-xs text-slate-400 hover:text-slate-600 transition-colors underline underline-offset-2"
+      >
+        ← Parse a different JD
+      </button>
+    </div>
+  );
+};
+
+// ─── Main Modal ─────────────────────────────────────────────────────────────────
+
 export const JDSearchModal = ({ isOpen, onClose, onJDExtracted }) => {
-    const modalRef = useRef(null);
-    const [jdData, setJdData] = useState(null);
-    const [progress, setProgress] = useState(null);
-    const [error, setError] = useState(null);
-    const [isProcessing, setIsProcessing] = useState(false);
+  const [step, setStep]             = useState(0);   // 0 input | 1 processing | 2 review
+  const [jdData, setJdData]         = useState(null);
+  const [progress, setProgress]     = useState(null);
+  const [error, setError]           = useState(null);
 
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
-    const handleExtract = useCallback((extractedData) => {
-        console.log('🎉 JD Extraction completed:', extractedData);
-        setJdData(extractedData);
-        setIsProcessing(false);
-        setProgress(null);
-        setError(null);
-        
-        if (onJDExtracted) {
-            onJDExtracted(extractedData);
+  // ── Reset on open ──────────────────────────────────────────────
+  useEffect(() => {
+    if (isOpen) {
+      setStep(0);
+      setJdData(null);
+      setProgress(null);
+      setError(null);
+    }
+  }, [isOpen]);
+
+  // ── Body scroll lock ───────────────────────────────────────────
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : 'unset';
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isOpen]);
+
+  // ── Escape to close ────────────────────────────────────────────
+  useEffect(() => {
+    if (!isOpen) return;
+    const h = (e) => { if (e.key === 'Escape' && step !== 1) handleClose(); };
+    document.addEventListener('keydown', h);
+    return () => document.removeEventListener('keydown', h);
+  }, [isOpen, step]);
+
+  const handleClose = useCallback(() => {
+    if (step === 1) return; // Block close while processing
+    setStep(0);
+    setJdData(null);
+    setProgress(null);
+    setError(null);
+    onClose();
+  }, [onClose, step]);
+
+  const handleProgress = useCallback((p) => {
+    setProgress(p);
+    if (p.stage === 'started' || (p.progress > 0 && p.progress < 100)) {
+      setStep(1);
+    }
+  }, []);
+
+  const handleExtract = useCallback((data) => {
+    setJdData(data);
+    setStep(2);
+    setProgress(null);
+    setError(null);
+    if (onJDExtracted) onJDExtracted(data);
+  }, [onJDExtracted]);
+
+  const handleError = useCallback((err) => {
+    setError(err.message || 'Extraction failed. Please try again.');
+    setStep(0);
+    setProgress(null);
+  }, []);
+
+  const handleReset = () => {
+    setStep(0);
+    setJdData(null);
+    setProgress(null);
+    setError(null);
+  };
+
+  if (!isOpen) return null;
+
+  const titles = [
+    'Parse Job Description',
+    'Analyzing…',
+    'Ready to Match',
+  ];
+
+  const subtitles = [
+    'Upload a file or paste the job description text',
+    'AI is extracting skills and requirements',
+    'Review the extracted data before searching',
+  ];
+
+  return createPortal(
+    <>
+      <style>{`
+        @keyframes jd-backdrop { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes jd-slide-up {
+          from { opacity: 0; transform: translateY(16px) scale(0.97); }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
         }
-    }, [onJDExtracted]);
-
-    const handleError = useCallback((error) => {
-        console.error('❌ JD Extraction error:', error);
-        setError(error.message || 'Failed to extract JD data');
-        setIsProcessing(false);
-        setProgress(null);
-    }, []);
-
-    const handleProgress = useCallback((progressUpdate) => {
-        console.log('📊 JD Extraction progress:', progressUpdate);
-        setProgress(progressUpdate);
-        
-        if (progressUpdate.stage === 'started') {
-            setIsProcessing(true);
-        } else if (progressUpdate.stage === 'completed') {
-            setIsProcessing(false);
+        @keyframes jd-shimmer {
+          0%   { background-position: 200% center; }
+          100% { background-position: -200% center; }
         }
-    }, []);
-
-    const handleClose = useCallback(() => {
-        if (isProcessing) {
-            const confirmClose = window.confirm('Extraction is in progress. Are you sure you want to close?');
-            if (!confirmClose) return;
+        .jd-backdrop   { animation: jd-backdrop 0.2s ease; }
+        .jd-modal      { animation: jd-slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .jd-shimmer    {
+          background-size: 200% 100%;
+          animation: jd-shimmer 2s linear infinite;
         }
-        setJdData(null);
-        setProgress(null);
-        setError(null);
-        setIsProcessing(false);
-        onClose();
-    }, [onClose, isProcessing]);
+      `}</style>
 
-    // Escape to close
-    useEffect(() => {
-        if (!isOpen) return;
-        const onKey = (e) => {
-            if (e.key === 'Escape') handleClose();
-        };
-        document.addEventListener('keydown', onKey);
-        return () => document.removeEventListener('keydown', onKey);
-    }, [isOpen, handleClose]);
+      {/* Backdrop */}
+      <div
+        className="jd-backdrop fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm"
+        onClick={handleClose}
+        aria-hidden="true"
+      />
 
-    // Prevent body scroll when modal is open
-    useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'unset';
-        }
-        return () => {
-            document.body.style.overflow = 'unset';
-        };
-    }, [isOpen]);
+      {/* Modal */}
+      <div className="fixed inset-0 z-[101] flex items-center justify-center p-4" role="dialog" aria-modal="true">
+        <div
+          className="jd-modal relative w-full max-w-lg bg-white rounded-2xl shadow-2xl shadow-slate-900/20 flex flex-col overflow-hidden"
+          style={{ maxHeight: 'min(90vh, 680px)' }}
+          onClick={e => e.stopPropagation()}
+        >
 
-    if (!isOpen) return null;
-
-    return createPortal(
-        <>
-            {/* Backdrop */}
-            <div
-                className={cn(
-                    'fixed inset-0 z-[100]',
-                    'bg-slate-900/70 backdrop-blur-md',
-                    'animate-fade-in'
-                )}
-                onClick={handleClose}
-                aria-hidden="true"
-            />
-
-            {/* Modal Container */}
-            <div
-                className="fixed inset-0 z-[101] overflow-y-auto"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="modal-title"
-            >
-                <div className="min-h-full flex items-start sm:items-center justify-center p-4 sm:p-6">
-                    <div
-                        ref={modalRef}
-                        className={cn(
-                            'relative w-full max-w-4xl',
-                            'bg-white rounded-2xl shadow-2xl',
-                            'animate-modal-slide-up',
-                            'max-h-[90vh] flex flex-col'
-                        )}
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        {/* Header */}
-                        <div className="relative px-6 pt-6 pb-4 border-b border-slate-100">
-                            <button
-                                onClick={handleClose}
-                                disabled={isProcessing}
-                                className={cn(
-                                    'absolute top-4 right-4',
-                                    'w-10 h-10 rounded-full',
-                                    'bg-slate-100 hover:bg-slate-200 active:bg-slate-300',
-                                    'flex items-center justify-center',
-                                    'transition-all duration-200',
-                                    'hover:scale-105 active:scale-95',
-                                    'group',
-                                    isProcessing && 'opacity-50 cursor-not-allowed'
-                                )}
-                                aria-label="Close modal"
-                            >
-                                <CloseIcon className="w-5 h-5 text-slate-600 group-hover:text-slate-800 transition-colors" />
-                            </button>
-
-                            <div className="flex items-start gap-4">
-                                <div className={cn(
-                                    'flex-shrink-0 w-14 h-14 rounded-2xl',
-                                    'bg-gradient-to-br from-amber-500 to-orange-600',
-                                    'flex items-center justify-center',
-                                    'shadow-lg shadow-amber-500/30',
-                                    'animate-pulse-slow'
-                                )}>
-                                    <SparklesIcon className="w-7 h-7 text-white" />
-                                </div>
-                                
-                                <div className="flex-1 min-w-0 pt-1">
-                                    <h2 id="modal-title" className="text-2xl font-bold text-slate-900 mb-1">
-                                        AI Job Description Parser
-                                    </h2>
-                                    <p className="text-sm text-slate-600">
-                                        Upload or paste a job description to extract structured data with AI
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Scrollable Content */}
-                        <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
-                            {/* Progress Display */}
-                            {progress && (
-                                <div className={cn(
-                                    'p-4 rounded-xl border-2',
-                                    'bg-gradient-to-r from-amber-50 to-orange-50',
-                                    'border-amber-200',
-                                    'animate-slide-down'
-                                )}>
-                                    <div className="flex items-center justify-between mb-3">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-                                            <span className="text-sm font-semibold text-amber-900">
-                                                {progress.message}
-                                            </span>
-                                        </div>
-                                        <span className="text-sm font-bold text-amber-700 tabular-nums">
-                                            {progress.progress}%
-                                        </span>
-                                    </div>
-                                    
-                                    {/* Progress Bar */}
-                                    <div className="relative w-full bg-amber-200/50 rounded-full h-2 overflow-hidden">
-                                        <div 
-                                            className={cn(
-                                                'absolute inset-y-0 left-0',
-                                                'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500',
-                                                'bg-size-200 animate-shimmer',
-                                                'transition-all duration-500 ease-out',
-                                                'rounded-full'
-                                            )}
-                                            style={{ width: `${progress.progress}%` }}
-                                        />
-                                    </div>
-                                    
-                                    {/* Progress Details */}
-                                    {(progress.stage || progress.current) && (
-                                        <div className="mt-2 flex items-center gap-3 text-xs text-amber-700">
-                                            {progress.stage && (
-                                                <span className="px-2 py-0.5 bg-amber-200/50 rounded-full font-medium">
-                                                    {progress.stage}
-                                                </span>
-                                            )}
-                                            {progress.current && (
-                                                <span>
-                                                    Item {progress.current} of {progress.imageCount || progress.total}
-                                                </span>
-                                            )}
-                                            {progress.uploadedCount && (
-                                                <span>• Uploaded: {progress.uploadedCount}</span>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* Error Display */}
-                            {error && (
-                                <div className={cn(
-                                    'p-4 rounded-xl border-2',
-                                    'bg-red-50 border-red-200',
-                                    'animate-shake'
-                                )}>
-                                    <div className="flex items-start gap-3">
-                                        <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                                            <ExclamationIcon className="w-5 h-5 text-red-600" />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <h3 className="text-sm font-semibold text-red-900 mb-1">
-                                                Extraction Failed
-                                            </h3>
-                                            <p className="text-sm text-red-700">
-                                                {error}
-                                            </p>
-                                        </div>
-                                        <button
-                                            onClick={() => setError(null)}
-                                            className="flex-shrink-0 text-red-400 hover:text-red-600 transition-colors"
-                                        >
-                                            <CloseIcon className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Document Extractor */}
-                            <div className={cn(
-                                'rounded-xl border-2 border-slate-200',
-                                'bg-gradient-to-br from-slate-50 to-white',
-                                'overflow-hidden'
-                            )}>
-                                {!apiKey ? (
-                                    <div className="p-8 text-center">
-                                        <div className={cn(
-                                            'inline-flex w-16 h-16 rounded-2xl',
-                                            'bg-amber-100 items-center justify-center',
-                                            'mb-4'
-                                        )}>
-                                            <ExclamationIcon className="w-8 h-8 text-amber-600" />
-                                        </div>
-                                        <h3 className="text-lg font-semibold text-slate-900 mb-2">
-                                            API Key Required
-                                        </h3>
-                                        <p className="text-sm text-slate-600 mb-4 max-w-md mx-auto">
-                                            To enable AI-powered JD parsing, please configure your Gemini API key in the environment settings.
-                                        </p>
-                                        <div className="inline-block bg-slate-100 rounded-lg px-4 py-3 border border-slate-200">
-                                            <code className="text-xs text-slate-700 font-mono">
-                                                VITE_GEMINI_API_KEY=your_api_key_here
-                                            </code>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="p-6">
-                                        <DocumentExtractor
-                                            apiKey={apiKey}
-                                            onExtract={handleExtract}
-                                            onError={handleError}
-                                            onProgress={handleProgress}
-                                            showTextInput={true}
-                                            showFileUpload={true}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Extracted Data Preview */}
-                            {jdData && (
-                                <div className={cn(
-                                    'rounded-xl border-2 border-green-200',
-                                    'bg-gradient-to-br from-green-50 to-emerald-50',
-                                    'overflow-hidden animate-slide-up'
-                                )}>
-                                    {/* Success Header */}
-                                    <div className="px-6 py-4 bg-white/60 backdrop-blur-sm border-b border-green-200">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-3">
-                                                <CheckCircleIcon className="w-6 h-6 text-green-600" />
-                                                <div>
-                                                    <h3 className="text-lg font-semibold text-slate-900">
-                                                        Extraction Complete
-                                                    </h3>
-                                                    <p className="text-xs text-slate-600">
-                                                        Job description parsed successfully
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <button
-                                                onClick={() => setJdData(null)}
-                                                className={cn(
-                                                    'px-3 py-1.5 rounded-lg',
-                                                    'text-xs font-medium',
-                                                    'bg-white hover:bg-slate-50',
-                                                    'text-slate-600 hover:text-slate-800',
-                                                    'border border-slate-200',
-                                                    'transition-all duration-200',
-                                                    'hover:shadow-sm'
-                                                )}
-                                            >
-                                                Clear
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {/* Data Cards */}
-                                    <div className="p-6 space-y-4">
-                                        {/* Job Title & Experience Grid */}
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            {/* Job Title */}
-                                            <div className={cn(
-                                                'p-4 rounded-xl',
-                                                'bg-white border border-slate-200',
-                                                'hover:border-amber-300 hover:shadow-md',
-                                                'transition-all duration-200'
-                                            )}>
-                                                <div className="flex items-start gap-3">
-                                                    <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                                        <BriefcaseIcon className="w-5 h-5 text-blue-600" />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <h4 className="text-xs font-medium text-slate-500 mb-1">
-                                                            Job Title
-                                                        </h4>
-                                                        <p className="text-sm font-semibold text-slate-900 truncate">
-                                                            {jdData.raw_title || 'Not specified'}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Experience */}
-                                            <div className={cn(
-                                                'p-4 rounded-xl',
-                                                'bg-white border border-slate-200',
-                                                'hover:border-amber-300 hover:shadow-md',
-                                                'transition-all duration-200'
-                                            )}>
-                                                <div className="flex items-start gap-3">
-                                                    <div className="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                                                        <ClockIcon className="w-5 h-5 text-purple-600" />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <h4 className="text-xs font-medium text-slate-500 mb-1">
-                                                            Experience Required
-                                                        </h4>
-                                                        <p className="text-sm font-semibold text-slate-900">
-                                                            {jdData.experience?.min_years 
-                                                                ? `${jdData.experience.min_years}+ years` 
-                                                                : 'Not specified'}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Skills */}
-                                        <div className={cn(
-                                            'p-4 rounded-xl',
-                                            'bg-white border border-slate-200',
-                                            'hover:border-amber-300 hover:shadow-md',
-                                            'transition-all duration-200'
-                                        )}>
-                                            <div className="flex items-start gap-3 mb-3">
-                                                <div className="flex-shrink-0 w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
-                                                    <CodeIcon className="w-5 h-5 text-amber-600" />
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <h4 className="text-xs font-medium text-slate-500 mb-1">
-                                                        Required Skills
-                                                    </h4>
-                                                    <p className="text-xs text-slate-600">
-                                                        {(jdData.skills?.must_have || []).length} must-have skills identified
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            
-                                            {(jdData.skills?.must_have || []).length > 0 ? (
-                                                <div className="flex flex-wrap gap-2">
-                                                    {(jdData.skills?.must_have || []).slice(0, 8).map((skill, index) => (
-                                                        <span 
-                                                            key={index}
-                                                            className={cn(
-                                                                'inline-flex items-center gap-1.5',
-                                                                'px-3 py-1.5 rounded-lg',
-                                                                'bg-gradient-to-r from-blue-50 to-indigo-50',
-                                                                'border border-blue-200',
-                                                                'text-xs font-medium text-blue-800',
-                                                                'hover:shadow-sm hover:scale-105',
-                                                                'transition-all duration-200',
-                                                                'animate-fade-in'
-                                                            )}
-                                                            style={{ animationDelay: `${index * 50}ms` }}
-                                                        >
-                                                            <span className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-                                                            {skill.name}
-                                                        </span>
-                                                    ))}
-                                                    {(jdData.skills?.must_have || []).length > 8 && (
-                                                        <span className={cn(
-                                                            'inline-flex items-center',
-                                                            'px-3 py-1.5 rounded-lg',
-                                                            'bg-slate-100 border border-slate-200',
-                                                            'text-xs font-medium text-slate-600'
-                                                        )}>
-                                                            +{(jdData.skills?.must_have || []).length - 8} more
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            ) : (
-                                                <p className="text-sm text-slate-500 italic">
-                                                    No skills extracted
-                                                </p>
-                                            )}
-                                        </div>
-
-                                        {/* Raw JSON (Collapsible) */}
-                                        <details className="group">
-                                            <summary className={cn(
-                                                'flex items-center gap-2 px-4 py-3 rounded-lg',
-                                                'bg-white border border-slate-200',
-                                                'cursor-pointer select-none',
-                                                'hover:bg-slate-50 hover:border-slate-300',
-                                                'transition-all duration-200',
-                                                'text-sm font-medium text-slate-700'
-                                            )}>
-                                                <svg 
-                                                    className="w-4 h-4 text-slate-400 transition-transform group-open:rotate-90" 
-                                                    fill="none" 
-                                                    stroke="currentColor" 
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                                                </svg>
-                                                View Raw JSON Data
-                                            </summary>
-                                            <div className="mt-2 p-4 bg-slate-900 rounded-lg border border-slate-700 overflow-hidden">
-                                                <pre className="text-xs text-green-400 font-mono overflow-auto max-h-64 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-800">
-                                                    {JSON.stringify(jdData, null, 2)}
-                                                </pre>
-                                            </div>
-                                        </details>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Footer with Action Button */}
-                        {jdData && (
-                            <div className="px-6 py-4 border-t border-slate-100 bg-slate-50">
-                                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                                    <p className="text-xs text-slate-600 text-center sm:text-left">
-                                        Ready to find matching candidates based on this job description
-                                    </p>
-                                    <button
-                                        onClick={() => {
-                                            console.log('🔍 Starting candidate search with JD data:', jdData);
-                                            // Trigger search functionality
-                                            alert('JD data is ready for candidate search! Check console for details.');
-                                        }}
-                                        className={cn(
-                                            'inline-flex items-center gap-2',
-                                            'px-6 py-3 rounded-xl',
-                                            'bg-gradient-to-r from-blue-600 to-purple-600',
-                                            'text-white font-semibold text-sm',
-                                            'shadow-lg shadow-blue-500/30',
-                                            'hover:shadow-xl hover:shadow-blue-500/40',
-                                            'hover:scale-105 active:scale-95',
-                                            'transition-all duration-200',
-                                            'whitespace-nowrap'
-                                        )}
-                                    >
-                                        <SearchIcon className="w-5 h-5" />
-                                        Start Candidate Search
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+          {/* ── Header ──────────────────────────────────────────── */}
+          <div className="px-6 pt-6 pb-5 flex-shrink-0">
+            {/* Top row: icon + close */}
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-md shadow-amber-500/30 text-white flex-shrink-0">
+                  <SparklesIcon />
                 </div>
+                <div>
+                  <h2 className="text-base font-bold text-slate-900 leading-tight">{titles[step]}</h2>
+                  <p className="text-xs text-slate-500 leading-tight mt-0.5">{subtitles[step]}</p>
+                </div>
+              </div>
+
+              <button
+                onClick={handleClose}
+                disabled={step === 1}
+                className={cn(
+                  'w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200',
+                  'bg-slate-100 text-slate-500',
+                  step === 1
+                    ? 'opacity-30 cursor-not-allowed'
+                    : 'hover:bg-slate-200 hover:text-slate-700 active:scale-95'
+                )}
+                aria-label="Close"
+              >
+                <CloseIcon />
+              </button>
             </div>
 
-            {/* Add custom animations to global styles */}
-            <style>{`
-                @keyframes fade-in {
-                    from {
-                        opacity: 0;
-                    }
-                    to {
-                        opacity: 1;
-                    }
-                }
+            {/* Step indicator */}
+            <div className="flex justify-center">
+              <StepIndicator current={step} />
+            </div>
+          </div>
 
-                @keyframes modal-slide-up {
-                    from {
-                        opacity: 0;
-                        transform: translateY(20px) scale(0.95);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0) scale(1);
-                    }
-                }
+          {/* ── Divider ─────────────────────────────────────────── */}
+          <div className="h-px bg-slate-100 flex-shrink-0" />
 
-                @keyframes slide-down {
-                    from {
-                        opacity: 0;
-                        transform: translateY(-10px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
+          {/* ── Body ────────────────────────────────────────────── */}
+          <div className="flex-1 overflow-y-auto min-h-0">
 
-                @keyframes slide-up {
-                    from {
-                        opacity: 0;
-                        transform: translateY(10px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
+            {/* Step 0 — Input */}
+            {step === 0 && (
+              <div className="px-6 py-5 space-y-4">
+                {/* Error */}
+                {error && (
+                  <div className="flex items-start gap-3 p-3.5 bg-red-50 border border-red-200 rounded-xl">
+                    <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center flex-shrink-0 text-red-500">
+                      <AlertIcon />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-red-800">Extraction failed</p>
+                      <p className="text-xs text-red-600 mt-0.5 leading-relaxed">{error}</p>
+                    </div>
+                    <button onClick={() => setError(null)} className="text-red-300 hover:text-red-500 transition-colors flex-shrink-0">
+                      <CloseIcon />
+                    </button>
+                  </div>
+                )}
 
-                @keyframes shake {
-                    0%, 100% {
-                        transform: translateX(0);
-                    }
-                    10%, 30%, 50%, 70%, 90% {
-                        transform: translateX(-5px);
-                    }
-                    20%, 40%, 60%, 80% {
-                        transform: translateX(5px);
-                    }
-                }
+                {/* No API key warning */}
+                {!apiKey ? (
+                  <div className="flex flex-col items-center gap-4 py-8 text-center">
+                    <div className="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center">
+                      <AlertIcon />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-slate-800 mb-1">API Key Required</p>
+                      <p className="text-xs text-slate-500 mb-3 max-w-xs mx-auto">
+                        Configure your Gemini API key to enable AI-powered JD parsing.
+                      </p>
+                      <code className="text-xs bg-slate-100 text-slate-700 px-3 py-2 rounded-lg font-mono">
+                        VITE_GEMINI_API_KEY=your_key
+                      </code>
+                    </div>
+                  </div>
+                ) : (
+                  /* DocumentExtractor — your existing component, clean wrapper */
+                  <div className="rounded-xl border border-slate-200 bg-slate-50/50 overflow-hidden">
+                    <div className="p-5">
+                      <DocumentExtractor
+                        apiKey={apiKey}
+                        onExtract={handleExtract}
+                        onError={handleError}
+                        onProgress={handleProgress}
+                        showTextInput={true}
+                        showFileUpload={true}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
-                @keyframes pulse-slow {
-                    0%, 100% {
-                        opacity: 1;
-                    }
-                    50% {
-                        opacity: 0.8;
-                    }
-                }
+            {/* Step 1 — Processing */}
+            {step === 1 && (
+              <ProcessingStep progress={progress} />
+            )}
 
-                @keyframes shimmer {
-                    0% {
-                        background-position: 200% center;
-                    }
-                    100% {
-                        background-position: -200% center;
-                    }
-                }
+            {/* Step 2 — Review */}
+            {step === 2 && jdData && (
+              <div className="py-5">
+                <ReviewStep jdData={jdData} onReset={handleReset} />
+              </div>
+            )}
+          </div>
 
-                .animate-fade-in {
-                    animation: fade-in 0.2s ease-out;
-                }
+          {/* ── Footer ──────────────────────────────────────────── */}
+          {step === 2 && jdData && (
+            <>
+              <div className="h-px bg-slate-100 flex-shrink-0" />
+              <div className="px-6 py-4 bg-slate-50/80 flex-shrink-0 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  Ready to find candidates
+                </div>
 
-                .animate-modal-slide-up {
-                    animation: modal-slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-                }
-
-                .animate-slide-down {
-                    animation: slide-down 0.3s ease-out;
-                }
-
-                .animate-slide-up {
-                    animation: slide-up 0.3s ease-out;
-                }
-
-                .animate-shake {
-                    animation: shake 0.5s ease-in-out;
-                }
-
-                .animate-pulse-slow {
-                    animation: pulse-slow 3s ease-in-out infinite;
-                }
-
-                .animate-shimmer {
-                    animation: shimmer 2s linear infinite;
-                }
-
-                .bg-size-200 {
-                    background-size: 200% 100%;
-                }
-
-                /* Scrollbar styles */
-                .scrollbar-thin::-webkit-scrollbar {
-                    width: 8px;
-                    height: 8px;
-                }
-
-                .scrollbar-thumb-slate-700::-webkit-scrollbar-thumb {
-                    background-color: rgb(51 65 85);
-                    border-radius: 4px;
-                }
-
-                .scrollbar-track-slate-800::-webkit-scrollbar-track {
-                    background-color: rgb(30 41 59);
-                }
-            `}</style>
-        </>,
-        document.body
-    );
+                <button
+                  onClick={handleClose}
+                  className={cn(
+                    components.button.base,
+                    components.button.variants.primary,
+                    'text-sm px-6 h-10 min-h-0 rounded-xl gap-2'
+                  )}
+                >
+                  <SearchIcon />
+                  Find Candidates
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </>,
+    document.body
+  );
 };
 
 export default JDSearchModal;

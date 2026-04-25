@@ -30,29 +30,76 @@ const LandingPage = () => {
         console.log('Search result selected:', result);
     };
 
-    // Handle JD extraction
-    const handleJDExtracted = async (jdData) => {
-        console.log('JD data extracted:', jdData);
-        
-        try {
-            // Generate embedding for the JD using jd.meta.embedding_text
-            const jdWithEmbedding = await generateJDEmbedding(jdData);
-            console.log('JD with embedding vector:', jdWithEmbedding);
+    // In your component:
+    const [matchLoading, setMatchLoading] = useState(false);
 
-             // 2. RUN THE HYBRID SEARCH ENGINE
-            console.log('Running Match Engine against candidates...');
-            const top5 = getTopCandidates(jdWithEmbedding, candidatesDb);
-            
-            console.log('🎯 Top 5 Candidates Found:', top5);
-            setShortlistedCandidates(top5);
-            
-            // 3. Close modal to show results (You'll need a UI for this next)
-            setShowJDModal(false);
+    const handleJDExtracted = async (jdData) => {
+        console.log('JD extracted:', jdData);
+        setMatchLoading(true);
+
+        try {
+            // Step 1: Generate JD embedding
+            const jdWithEmbedding = await generateJDEmbedding(jdData);
+            const jdVector = jdWithEmbedding.meta.embedding_vector;
+
+            // Step 2: Run hybrid matching (pure JS, no backend needed)
+            // getTopCandidates(jd, jdVector, candidates, topN)
+            const rankedCandidates = getTopCandidates(
+                jdWithEmbedding,   // full JD JSON
+                jdVector,          // Gemini embedding vector
+                candidatesDb,      // your 40 profiles with vectors
+                10                 // return top 10
+            );
+
+            console.log('Top candidates:', rankedCandidates);
+
+            // Step 3: Navigate to results page, pass data via router state
+            navigate('/results', {
+                state: {
+                    jd: jdWithEmbedding,
+                    candidates: rankedCandidates,
+                }
+            });
+
         } catch (error) {
-            console.error('Failed to generate JD embedding:', error);
+            console.error('Matching failed:', error);
+        } finally {
+            setMatchLoading(false);
         }
     };
-
+    // ─── Shape of each item in rankedCandidates ───────────────────────────────────
+    //
+    // {
+    //   candidate: { ...full candidate profile },
+    //   matchScore: 87.4,              ← 0–100, use this for the ranked shortlist
+    //
+    //   scoreBreakdown: {
+    //     bm25_raw: 142.3,             ← raw BM25F before normalisation (for debugging)
+    //     vector_similarity: 0.847,    ← cosine sim from Gemini embeddings
+    //     experience_score: 0.95,      ← structural bonus scores
+    //     location_score: 1.0,
+    //     salary_score: 0.88,
+    //     availability_score: 0.85,
+    //     match_score: 87,
+    //   },
+    //
+    //   explanation: {
+    //     must_have_matched:    ['Node.js', 'PostgreSQL', 'REST APIs'],
+    //     must_have_missing:    [],
+    //     nice_to_have_matched: ['Redis'],
+    //     nice_to_have_missing: ['Kubernetes'],
+    //     domain_matched:       ['fintech', 'payments'],
+    //     experience_note:      '5 years — within range (4–7)',
+    //     salary_note:          'Expects 28 INR — within budget (20–32)',
+    //     availability_note:    'Passively looking · 60-day notice period',
+    //     strength_tags: [
+    //       { label: 'Full Skills Match',  color: 'green'  },
+    //       { label: 'Domain Expert',      color: 'blue'   },
+    //       { label: '+1 Bonus Skills',    color: 'purple' },
+    //     ],
+    //     summary: 'Rahul Sharma matches all required skills, with hands-on fintech & payments domain experience, and bonus skills in Redis.',
+    //   }
+    // }
     // Open JD modal
     const handleOpenJDModal = () => {
         setShowJDModal(true);
