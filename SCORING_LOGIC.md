@@ -254,14 +254,3 @@ combinedScore = (matchScore × 0.60) + (interestScore × 0.40)
 | PDF Processing | `src/utils/buggu/pdfProcessor.js` |
 | Embedding Generation | `src/utils/embeddingGenerator.js` |
 
----
-
-## Performance Characteristics
-
-| Metric | Value |
-|--------|-------|
-| Match latency (6 candidates) | ~50ms |
-| Interest assessment (6 candidates) | ~30-60s (parallel) |
-| Memory footprint | ~5MB (candidate DB + embeddings) |
-| API calls per search | 6 (Gemini conversations) |
-| Zero-latency operations | Matching, explanations, bonuses |
