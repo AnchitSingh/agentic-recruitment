@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { cn, components, backgrounds } from '../utils/designTokens';
 import { generateJDEmbedding } from '../utils/embeddingGenerator';
@@ -160,10 +160,11 @@ const StatBar = ({ label, value }) => (
  * @param {Function} props.onViewChat - Callback when user clicks to view chat, receives candidate_id
  * @param {Object} props.outreachProgress - Object tracking outreach progress by candidate_id
  * @param {string} props.outreachState - Current outreach state ('idle', 'running', 'done', 'error')
+ * @param {Function} props.onDisabledChatClick - Callback when user clicks disabled View Chat button
  * @param {boolean} props.showCombinedScores - Whether to show combined match+interest scores
  * @returns {JSX.Element} Rendered candidate card
  */
-const CandidateCard = ({ result, index, onViewChat, outreachProgress, outreachState, showCombinedScores }) => {
+const CandidateCard = ({ result, index, onViewChat, outreachProgress, outreachState, onDisabledChatClick, showCombinedScores }) => {
   const [expanded, setExpanded] = useState(false);
   const { candidate, matchScore, scoreBreakdown, explanation, interestScore, combinedScore, interestLevel, matchExplanation, matchBreakdown } = result;
 
@@ -308,8 +309,13 @@ const CandidateCard = ({ result, index, onViewChat, outreachProgress, outreachSt
         </button>
 
         <button
-          onClick={() => onViewChat(candidate.candidate_id)}
-          disabled={outreachState === 'idle' || outreachProgress?.[candidate.candidate_id] === 'running'}
+          onClick={() => {
+            if (outreachState === 'idle' || outreachProgress?.[candidate.candidate_id] === 'running') {
+              onDisabledChatClick();
+            } else {
+              onViewChat(candidate.candidate_id);
+            }
+          }}
           className={cn(
             components.button.base,
             components.button.variants.primary,
@@ -427,15 +433,21 @@ const ResultsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { jd, candidates } = location.state || { jd: null, candidates: [] };
-  const [loading, setLoading] = useState(false);
-  const [localCandidates, setLocalCandidates] = useState(candidates);
-  const [localJd, setLocalJd] = useState(jd);
-
-  // Outreach state
-  const [outreachState, setOutreachState] = useState('idle');
+  const [localJd, setLocalJd] = useState(null);
+  const [localCandidates, setLocalCandidates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [outreachState, setOutreachState] = useState('idle'); // idle, running, done, error
   const [outreachProgress, setOutreachProgress] = useState({});
   const [finalShortlist, setFinalShortlist] = useState(null);
   const [selectedChat, setSelectedChat] = useState(null);
+  const [shakeStartButton, setShakeStartButton] = useState(false);
+  const startButtonRef = useRef(null);
+
+  // Handle shake animation when user clicks disabled View Chat button
+  const handleDisabledChatClick = () => {
+    setShakeStartButton(true);
+    setTimeout(() => setShakeStartButton(false), 500);
+  };
 
   // Run matching if we have jd but no candidates
   useEffect(() => {
@@ -567,6 +579,14 @@ const ResultsPage = () => {
           from { opacity: 0; transform: translateY(12px); }
           to   { opacity: 1; transform: translateY(0); }
         }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+          20%, 40%, 60%, 80% { transform: translateX(4px); }
+        }
+        .animate-shake {
+          animation: shake 0.5s ease-in-out;
+        }
       `}</style>
 
       {/* ── Background — identical to LandingPage ─────────────────── */}
@@ -609,11 +629,13 @@ const ResultsPage = () => {
           <div className="flex items-center gap-2 flex-shrink-0">
             {outreachState === 'idle' && (
               <button
+                ref={startButtonRef}
                 onClick={handleInitiateOutreach}
                 className={cn(
                   components.button.base,
                   components.button.variants.primary,
-                  'text-xs px-4 h-8 min-h-0 rounded-lg gap-1.5'
+                  'text-xs px-4 h-8 min-h-0 rounded-lg gap-1.5',
+                  shakeStartButton && 'animate-shake'
                 )}
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -680,6 +702,7 @@ const ResultsPage = () => {
               onViewChat={setSelectedChat}
               outreachProgress={outreachProgress}
               outreachState={outreachState}
+              onDisabledChatClick={handleDisabledChatClick}
               showCombinedScores={outreachState === 'done'}
             />
           ))}
