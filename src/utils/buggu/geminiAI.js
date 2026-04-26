@@ -178,8 +178,8 @@ export async function extractJSONFromImages({ imageBlobs, schemaPrompt, onProgre
       }
     }
     
-    // Upload images to Gemini
-    const uploadedFiles = [];
+    // Convert images to base64 data URIs (avoids CORS issues with file upload API)
+    const imageDataUris = [];
     for (const [index, item] of imageItems.entries()) {
       const blob = item.blob;
 
@@ -193,31 +193,30 @@ export async function extractJSONFromImages({ imageBlobs, schemaPrompt, onProgre
         ? blob.type
         : 'image/png';
 
-      console.log(`Uploading image ${index + 1} (${(blob.size / 1024).toFixed(1)} KB)...`);
+      console.log(`Converting image ${index + 1} to base64 (${(blob.size / 1024).toFixed(1)} KB)...`);
 
-      // Pass the Blob DIRECTLY with displayName
-      const file = await ai.files.upload({
-        file: blob,
-        config: {
-          mimeType: mimeType,
-          displayName: item.name || `image-${index + 1}`
-        }
+      // Convert blob to base64 data URI
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
       });
 
-      uploadedFiles.push(file);
-      console.log(`✅ Uploaded: ${file.name} (${file.sizeBytes} bytes)`);
+      imageDataUris.push(base64);
+      console.log(`✅ Converted image ${index + 1}`);
 
       // Emit progress callback
       if (onProgress) {
-        onProgress({ stage: 'upload', progress: ((index + 1) / imageItems.length) * 100, message: `Uploaded image ${index + 1}/${imageItems.length}` });
+        onProgress({ stage: 'upload', progress: ((index + 1) / imageItems.length) * 100, message: `Processed image ${index + 1}/${imageItems.length}` });
       }
     }
-    
-    // Create content parts with images
-    const contentParts = uploadedFiles.map(file => ({
-      fileData: {
-        mimeType: file.mimeType,
-        fileUri: file.uri
+
+    // Create content parts with inline images (base64 data URIs)
+    const contentParts = imageDataUris.map(dataUri => ({
+      inlineData: {
+        mimeType: dataUri.match(/^data:(image\/[a-zA-Z]+);/)[1],
+        data: dataUri.split(',')[1]
       }
     }));
     
@@ -271,16 +270,7 @@ export async function extractJSONFromImages({ imageBlobs, schemaPrompt, onProgre
     }
     
     console.log('✅ Extraction successful with Gemini');
-    
-    // Clean up uploaded files
-    for (const file of uploadedFiles) {
-      try {
-        await ai.files.delete(file.name);
-      } catch (cleanupError) {
-        console.warn('Failed to clean up file:', file.name, cleanupError.message);
-      }
-    }
-    
+
     return parsedData;
     
   } catch (error) {
