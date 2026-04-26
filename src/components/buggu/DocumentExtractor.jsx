@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useDocumentProcessor } from '../../hooks/useDocumentProcessor';
 import { extractJSONFromImages } from '../../utils/buggu/geminiAI';
 import FileUpload from './FileUpload';
@@ -30,7 +30,8 @@ export function DocumentExtractor({
   const [extracting, setExtracting] = useState(false);
   const [result, setResult] = useState(null);
   const [extractionError, setExtractionError] = useState(null);
-  
+  const previewRef = useRef(null);
+
   const documentProcessor = useDocumentProcessor({
     onSuccess: (processedItems) => {
       setExtractionError(null);
@@ -54,6 +55,13 @@ export function DocumentExtractor({
     setResult(null);
     setExtractionError(null);
   };
+
+  // Auto-scroll to preview when files are uploaded
+  useEffect(() => {
+    if (documentProcessor.processedItems.length > 0 && previewRef.current) {
+      previewRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [documentProcessor.processedItems.length]);
 
   const handleExtract = async () => {
     if (!apiKey) {
@@ -132,10 +140,12 @@ export function DocumentExtractor({
       )}
 
       {/* Content Preview */}
-      <ContentPreview 
-        items={documentProcessor.processedItems}
-        onClear={handleClearAll}
-      />
+      <div ref={previewRef}>
+        <ContentPreview
+          items={documentProcessor.processedItems}
+          onClear={handleClearAll}
+        />
+      </div>
 
       {/* Error Display */}
       {extractionError && (
