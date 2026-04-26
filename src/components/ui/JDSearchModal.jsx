@@ -424,14 +424,10 @@ export const JDSearchModal = ({ isOpen, onClose, onJDExtracted }) => {
     setProgress(null);
     setError(null);
 
-    // If processing was started, show step 1 briefly before moving to step 2
-    if (processingStarted) {
-      setStep(1);
-      setTimeout(() => setStep(2), 800);
-    } else {
-      setStep(2);
-    }
-  }, [processingStarted]);
+    // Always show step 1 briefly before moving to step 2, even for fast extractions
+    setStep(1);
+    setTimeout(() => setStep(2), 800);
+  }, []);
 
   const handleError = useCallback((err) => {
     setError(err.message || 'Extraction failed. Please try again.');
