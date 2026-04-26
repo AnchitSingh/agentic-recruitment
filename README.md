@@ -310,6 +310,8 @@ cp .env.example .env
 # Add your Gemini API key: VITE_GEMINI_API_KEY=your_key_here
 ```
 
+**Sample JDs:** For testing, sample job descriptions are available in the `sample_data/` directory.
+
 ### Development
 
 ```bash
